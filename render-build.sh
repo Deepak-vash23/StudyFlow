@@ -1,6 +1,9 @@
 #!/bin/sh
-# Install frontend dependencies
-npm install
+# Exit immediately if a command exits with a non-zero status
+set -e
+
+# Install frontend dependencies (including devDependencies for vite build)
+npm install --include=dev
 
 # Build the frontend (outputs to dist/)
 npm run build
