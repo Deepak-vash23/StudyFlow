@@ -11,7 +11,7 @@ export const TaskProvider = ({ children }) => {
     const [error, setError] = useState(null);
     const { user } = useAuth();
 
-    const API_URL = 'http://localhost:5000/api/tasks';
+    const API_URL = '/api/tasks';
 
     // Fetch tasks on mount
     const fetchTasks = async () => {
