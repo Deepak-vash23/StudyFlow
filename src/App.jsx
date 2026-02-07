@@ -1,0 +1,40 @@
+import { Routes, Route } from 'react-router-dom';
+import Layout from './Layout';
+import RequireAuth from './components/RequireAuth';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import Dashboard from './pages/Dashboard';
+import Tasks from './pages/Tasks';
+import Planner from './pages/Planner';
+import CalendarPage from './pages/CalendarPage';
+import { AuthProvider } from './context/AuthContext';
+import { TaskProvider } from './context/TaskContext';
+import { PlannerProvider } from './context/PlannerContext';
+
+function App() {
+  return (
+    <AuthProvider>
+      <TaskProvider>
+        <PlannerProvider>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+
+            <Route path="/" element={
+              <RequireAuth>
+                <Layout />
+              </RequireAuth>
+            }>
+              <Route index element={<Dashboard />} />
+              <Route path="tasks" element={<Tasks />} />
+              <Route path="planner" element={<Planner />} />
+              <Route path="calendar" element={<CalendarPage />} />
+            </Route>
+          </Routes>
+        </PlannerProvider>
+      </TaskProvider>
+    </AuthProvider>
+  );
+}
+
+export default App;
