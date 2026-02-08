@@ -1,12 +1,81 @@
 import { useState, useEffect } from 'react';
 import { useTasks } from '../context/TaskContext';
-import { X, Clock } from 'lucide-react';
+import { X } from 'lucide-react';
+
+const TimeSelect = ({ label, value, onChange }) => {
+    // Parse HH:mm to 12-hour format
+    const parseTime = (timeStr) => {
+        if (!timeStr) return { hour: '09', minute: '00', period: 'AM' };
+        const [h, m] = timeStr.split(':').map(Number);
+        const period = h >= 12 ? 'PM' : 'AM';
+        let hour = h % 12;
+        if (hour === 0) hour = 12;
+        return {
+            hour: hour.toString().padStart(2, '0'),
+            minute: m.toString().padStart(2, '0'),
+            period
+        };
+    };
+
+    const [localState, setLocalState] = useState(parseTime(value));
+
+    useEffect(() => {
+        setLocalState(parseTime(value));
+    }, [value]);
+
+    const handleChange = (field, val) => {
+        const newState = { ...localState, [field]: val };
+        setLocalState(newState);
+
+        // Convert back to HH:mm
+        let h = parseInt(newState.hour);
+        if (newState.period === 'PM' && h !== 12) h += 12;
+        if (newState.period === 'AM' && h === 12) h = 0;
+        const time24 = `${h.toString().padStart(2, '0')}:${newState.minute}`;
+        onChange(time24);
+    };
+
+    return (
+        <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+            <div className="flex gap-2">
+                <select
+                    className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                    value={localState.hour}
+                    onChange={(e) => handleChange('hour', e.target.value)}
+                >
+                    {Array.from({ length: 12 }, (_, i) => i + 1).map(h => (
+                        <option key={h} value={h.toString().padStart(2, '0')}>{h}</option>
+                    ))}
+                </select>
+                <span className="self-center font-bold text-gray-400">:</span>
+                <select
+                    className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                    value={localState.minute}
+                    onChange={(e) => handleChange('minute', e.target.value)}
+                >
+                    {Array.from({ length: 12 }, (_, i) => i * 5).map(m => (
+                        <option key={m} value={m.toString().padStart(2, '0')}>{m.toString().padStart(2, '0')}</option>
+                    ))}
+                </select>
+                <select
+                    className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                    value={localState.period}
+                    onChange={(e) => handleChange('period', e.target.value)}
+                >
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                </select>
+            </div>
+        </div>
+    );
+};
 
 export default function SlotForm({ isOpen, onClose, onSubmit, initialData = null }) {
     const { tasks } = useTasks();
     const [formData, setFormData] = useState({
-        startTime: '',
-        endTime: '',
+        startTime: '09:00',
+        endTime: '10:00',
         label: '',
         taskId: ''
     });
@@ -16,8 +85,8 @@ export default function SlotForm({ isOpen, onClose, onSubmit, initialData = null
             setFormData(initialData);
         } else {
             setFormData({
-                startTime: '',
-                endTime: '',
+                startTime: '09:00',
+                endTime: '10:00',
                 label: '',
                 taskId: ''
             });
@@ -63,27 +132,17 @@ export default function SlotForm({ isOpen, onClose, onSubmit, initialData = null
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Start Time</label>
-                                    <input
-                                        type="time"
-                                        required
-                                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                                        value={formData.startTime}
-                                        onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">End Time</label>
-                                    <input
-                                        type="time"
-                                        required
-                                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                                        value={formData.endTime}
-                                        onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
-                                    />
-                                </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <TimeSelect
+                                    label="Start Time"
+                                    value={formData.startTime}
+                                    onChange={(val) => setFormData(prev => ({ ...prev, startTime: val }))}
+                                />
+                                <TimeSelect
+                                    label="End Time"
+                                    value={formData.endTime}
+                                    onChange={(val) => setFormData(prev => ({ ...prev, endTime: val }))}
+                                />
                             </div>
 
                             <div>

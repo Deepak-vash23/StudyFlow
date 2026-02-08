@@ -28,6 +28,14 @@ const taskSchema = new mongoose.Schema({
         type: Date
         // required: false - Allow tasks to be in "Backlog" without a specific date
     },
+    estimatedTime: {
+        type: Number
+    },
+    estimatedTimeUnit: {
+        type: String,
+        enum: ['mins', 'hrs'],
+        default: 'mins'
+    },
     slotStart: {
         type: String // HH:mm format
     },

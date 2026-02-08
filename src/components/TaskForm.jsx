@@ -8,6 +8,7 @@ export default function TaskForm({ isOpen, onClose, onSubmit, initialData = null
         category: 'Study',
         importance: 'Medium',
         estimatedTime: '',
+        estimatedTimeUnit: 'mins',
         deadline: ''
     });
 
@@ -21,6 +22,7 @@ export default function TaskForm({ isOpen, onClose, onSubmit, initialData = null
                 category: 'Study',
                 importance: 'Medium',
                 estimatedTime: '',
+                estimatedTimeUnit: 'mins',
                 deadline: ''
             });
         }
@@ -118,17 +120,27 @@ export default function TaskForm({ isOpen, onClose, onSubmit, initialData = null
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Est. Time (mins)</label>
-                                    <div className="mt-1 relative rounded-md shadow-sm">
+                                    <label className="block text-sm font-medium text-gray-700">Est. Time</label>
+                                    <div className="mt-1 relative rounded-md shadow-sm flex">
                                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                             <Clock className="h-4 w-4 text-gray-400" />
                                         </div>
                                         <input
                                             type="number"
-                                            className="block w-full pl-10 border border-gray-300 rounded-md shadow-sm py-2 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                            step="0.1"
+                                            className="block w-full pl-10 border border-gray-300 rounded-l-md shadow-sm py-2 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                                             value={formData.estimatedTime}
                                             onChange={(e) => setFormData({ ...formData, estimatedTime: e.target.value })}
+                                            placeholder="0"
                                         />
+                                        <select
+                                            className="border-t border-b border-r border-gray-300 rounded-r-md bg-gray-50 px-2 py-2 text-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                                            value={formData.estimatedTimeUnit}
+                                            onChange={(e) => setFormData({ ...formData, estimatedTimeUnit: e.target.value })}
+                                        >
+                                            <option value="mins">mins</option>
+                                            <option value="hrs">hrs</option>
+                                        </select>
                                     </div>
                                 </div>
 

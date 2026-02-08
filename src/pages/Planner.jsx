@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { usePlanner } from '../context/PlannerContext';
 import { useTasks } from '../context/TaskContext';
-import { format, addDays, subDays, parseISO, isBefore, startOfToday } from 'date-fns';
+import { format, addDays, subDays, parseISO, isBefore, startOfToday, parse } from 'date-fns';
 import { ChevronLeft, ChevronRight, Plus, X, Trash2, Edit2, CheckCircle2, Circle, XCircle } from 'lucide-react';
 import SlotForm from '../components/SlotForm';
 import clsx from 'clsx';
@@ -103,8 +103,12 @@ export default function Planner() {
                                 )}
                             >
                                 <div className="flex flex-col min-w-[80px] text-center">
-                                    <span className="text-sm font-semibold">{slot.startTime}</span>
-                                    <span className="text-xs opacity-75">{slot.endTime}</span>
+                                    <span className="text-sm font-semibold">
+                                        {format(parse(slot.startTime, 'HH:mm', new Date()), 'h:mm a')}
+                                    </span>
+                                    <span className="text-xs opacity-75">
+                                        {format(parse(slot.endTime, 'HH:mm', new Date()), 'h:mm a')}
+                                    </span>
                                 </div>
 
                                 <div className="flex-1">

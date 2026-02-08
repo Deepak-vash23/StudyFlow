@@ -201,7 +201,8 @@ export default function Tasks() {
                                     </span>
                                     {task.estimatedTime && (
                                         <span className="flex items-center text-xs text-gray-500 gap-1 bg-white/50 px-2 py-1 rounded-md border border-white/20">
-                                            <Clock className="w-3 h-3" /> {task.estimatedTime}m
+                                            <Clock className="w-3 h-3" />
+                                            {task.estimatedTime}{task.estimatedTimeUnit === 'hrs' ? 'h' : 'm'}
                                         </span>
                                     )}
                                 </div>
