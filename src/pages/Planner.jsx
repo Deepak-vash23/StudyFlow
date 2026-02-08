@@ -145,10 +145,8 @@ export default function Planner() {
                                     </button>
                                     <button
                                         onClick={() => deleteSlot(slot.id)}
-                                        disabled={slot.failed}
-                                        className={clsx("p-1.5 rounded-md",
-                                            slot.failed ? "opacity-30 cursor-not-allowed" : "hover:bg-white hover:bg-opacity-50"
-                                        )}
+                                        className="p-1.5 rounded-md hover:bg-white hover:bg-opacity-50 text-red-600 hover:text-red-700 transition-colors"
+                                        title="Delete Slot"
                                     >
                                         <Trash2 className="w-4 h-4" />
                                     </button>
