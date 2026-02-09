@@ -71,7 +71,7 @@ const TimeSelect = ({ label, value, onChange }) => {
     );
 };
 
-export default function SlotForm({ isOpen, onClose, onSubmit, initialData = null }) {
+export default function SlotForm({ isOpen, onClose, onSubmit, initialData = null, selectedDate }) {
     const { tasks } = useTasks();
     const [formData, setFormData] = useState({
         startTime: '09:00',
@@ -102,6 +102,22 @@ export default function SlotForm({ isOpen, onClose, onSubmit, initialData = null
             }
         }
     }, [formData.taskId, tasks]);
+
+    // Filter tasks for the selected date
+    const filteredTasks = tasks.filter(t => {
+        if (t.status === 'Completed' || t.status === 'Failed') return false;
+
+        // If selectedDate is provided, check if task matches
+        if (selectedDate && t.assignedDate) {
+            const taskDate = new Date(t.assignedDate).toISOString().split('T')[0];
+            return taskDate === selectedDate;
+        }
+
+        // If no date on task, maybe show it? Or only show dateless tasks if no date on planner?
+        // User requested: "only show the today's task in linked task"
+        // So strict filtering seems appropriate.
+        return false;
+    });
 
     if (!isOpen) return null;
 
@@ -153,8 +169,8 @@ export default function SlotForm({ isOpen, onClose, onSubmit, initialData = null
                                     onChange={(e) => setFormData({ ...formData, taskId: e.target.value })}
                                 >
                                     <option value="">-- None --</option>
-                                    {tasks.filter(t => t.status !== 'completed').map(task => (
-                                        <option key={task.id} value={task.id}>{task.title}</option>
+                                    {filteredTasks.map(task => (
+                                        <option key={task._id || task.id} value={task._id || task.id}>{task.title}</option>
                                     ))}
                                 </select>
                             </div>

@@ -29,23 +29,17 @@ export const PlannerProvider = ({ children }) => {
             // Skip tasks without assignedDate (backlog tasks)
             if (!task.assignedDate) return false;
 
+            // Skip tasks without time slots (plain tasks)
+            if (!task.slotStart || !task.slotEnd) return false;
+
             const taskDate = new Date(task.assignedDate).toISOString().split('T')[0];
             return taskDate === dateString;
         }).map(task => {
             const taskDate = new Date(task.assignedDate).toISOString().split('T')[0];
 
-            // Check if expired
-            let isExpired = false;
-            if (taskDate < currentDateStr) {
-                isExpired = true;
-            } else if (taskDate === currentDateStr) {
-                if (task.slotEnd < currentTimeStr) {
-                    isExpired = true;
-                }
-            }
-
-            // A slot is failed if backend says so OR if it is expired and not completed
-            const isFailed = task.status === 'Failed' || (isExpired && task.status !== 'Completed');
+            // A slot is failed ONLY if backend says so.
+            // Client-side predictive failure is removed.
+            const isFailed = task.status === 'Failed';
 
             return {
                 id: task._id,

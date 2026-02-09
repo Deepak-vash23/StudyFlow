@@ -8,27 +8,26 @@ const startFailureCheckJob = () => {
 
         try {
             const now = new Date();
-            const currentHours = now.getHours();
-            const currentMinutes = now.getMinutes();
-            const currentTimeStr = `${currentHours.toString().padStart(2, '0')}:${currentMinutes.toString().padStart(2, '0')}`;
-
-            // Get today's date at 00:00:00
-            const todayStart = new Date();
-            todayStart.setHours(0, 0, 0, 0);
+            // ONLY run this logic if it is past 11:00 PM (23:00)
+            if (currentHours < 23) {
+                console.log('Not yet 11 PM. Skipping failure check.');
+                return;
+            }
 
             // Find tasks that obey these conditions:
             // 1. Status is "Pending" or "In Progress"
-            // 2. Assigned date is BEFORE today OR (Assigned date IS today AND slotEnd < currentTime)
+            // 2. Assigned date is BEFORE today OR (Assigned date IS today)
+            // Basically, if it's 11 PM and the task is still Pending/In Progress on the Assigned Date, it's failed.
 
             const overdueTasks = await Task.find({
                 status: { $in: ['Pending', 'In Progress'] },
+                // importance: { $in: ['High', 'Critical'] }, // REMOVED: Fail ALL tasks
                 $or: [
                     // Case 1: Task was assigned to a past date (and has a date)
                     { assignedDate: { $exists: true, $lt: todayStart } },
-                    // Case 2: Task is assigned to today, but time slot has passed
+                    // Case 2: Task is assigned to today (and we are past 23:00)
                     {
-                        assignedDate: { $gte: todayStart, $lt: new Date(todayStart.getTime() + 24 * 60 * 60 * 1000) },
-                        slotEnd: { $exists: true, $lt: currentTimeStr }
+                        assignedDate: { $gte: todayStart, $lt: new Date(todayStart.getTime() + 24 * 60 * 60 * 1000) }
                     }
                 ]
             });

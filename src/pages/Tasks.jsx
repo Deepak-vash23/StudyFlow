@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTasks } from '../context/TaskContext';
 import TaskForm from '../components/TaskForm';
-import { Plus, Filter, CheckCircle2, Circle, Trash2, Edit2, Clock, AlertTriangle, XCircle, ChevronDown } from 'lucide-react';
+import { Plus, Filter, CheckCircle2, Circle, Trash2, Edit2, Clock, AlertTriangle, XCircle, ChevronDown, ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
 import clsx from 'clsx';
-import { format } from 'date-fns';
+import { format, addDays, subDays, isSameDay, parseISO, startOfToday } from 'date-fns';
 
 const GlassDropdown = ({ value, options, onChange, label, icon: Icon }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -65,6 +65,7 @@ export default function Tasks() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingTask, setEditingTask] = useState(null);
     const [filter, setFilter] = useState({ category: 'All', importance: 'All', status: 'All' });
+    const [selectedDate, setSelectedDate] = useState(new Date());
 
     const handleCreate = (data) => {
         addTask(data);
@@ -84,6 +85,18 @@ export default function Tasks() {
 
     const filteredTasks = tasks.filter(task => {
         if (task.type === 'slot') return false; // Hide planner slots from main task list
+
+        // Filter by Date
+        const dateToCheck = task.assignedDate || task.createdAt;
+        if (dateToCheck) {
+            const taskDate = new Date(dateToCheck);
+            if (!isSameDay(taskDate, selectedDate)) return false;
+        } else {
+            // If absolutely no date, show on Today or hide? 
+            // Let's hide to avoid clutter, or maybe they belong to "Backlog"
+            return false;
+        }
+
         if (filter.category !== 'All' && task.category !== filter.category) return false;
         if (filter.importance !== 'All' && task.importance !== filter.importance) return false;
         if (filter.status !== 'All') {
@@ -122,6 +135,21 @@ export default function Tasks() {
                     <h1 className="text-2xl font-bold text-gray-900">Tasks</h1>
                     <p className="text-gray-500">Manage and organize your daily work</p>
                 </div>
+
+                {/* Date Navigation */}
+                <div className="flex items-center gap-4 bg-white/70 backdrop-blur-xl p-1 rounded-xl border border-white/20 shadow-sm order-last sm:order-none">
+                    <button onClick={() => setSelectedDate(subDays(selectedDate, 1))} className="p-1 hover:bg-white/50 rounded-lg transition-colors">
+                        <ChevronLeft className="w-5 h-5 text-gray-600" />
+                    </button>
+                    <span className="font-medium text-gray-700 min-w-[140px] text-center flex items-center justify-center gap-2">
+                        <CalendarIcon className="w-4 h-4 text-gray-500" />
+                        {format(selectedDate, 'EEE, MMM d')}
+                    </span>
+                    <button onClick={() => setSelectedDate(addDays(selectedDate, 1))} className="p-1 hover:bg-white/50 rounded-lg transition-colors">
+                        <ChevronRight className="w-5 h-5 text-gray-600" />
+                    </button>
+                </div>
+
                 <button
                     onClick={() => { setEditingTask(null); setIsModalOpen(true); }}
                     className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors shadow-sm"
@@ -164,13 +192,13 @@ export default function Tasks() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredTasks.length === 0 ? (
                     <div className="col-span-full text-center py-12 text-gray-500 bg-white rounded-xl border border-dashed border-gray-300">
-                        <p>No tasks found. Create one to get started!</p>
+                        <p>No tasks found for {format(selectedDate, 'MMM d')}. Create one to get started!</p>
                     </div>
                 ) : (
                     filteredTasks.map(task => (
                         <div key={task._id} className={clsx("group bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg hover:shadow-xl transition-all border border-white/20 overflow-hidden flex flex-col hover:bg-white/80",
                             task.status === 'Completed' && "opacity-75",
-                            task.status === 'Failed' && "border-red-200/50 bg-red-50/80"
+                            task.status === 'Failed' && "border-gray-200/50 bg-gray-100/80"
                         )}>
                             <div className="p-5 flex-1">
                                 <div className="flex justify-between items-start mb-3">
@@ -187,7 +215,7 @@ export default function Tasks() {
                                     </div>
                                 </div>
 
-                                <h3 className={clsx("text-lg font-semibold text-gray-900 mb-1", task.status === 'Completed' && "line-through text-gray-500", task.status === 'Failed' && "text-red-700")}>
+                                <h3 className={clsx("text-lg font-semibold text-gray-900 mb-1", task.status === 'Completed' && "line-through text-gray-500", task.status === 'Failed' && "text-gray-500 line-through")}>
                                     {task.title}
                                 </h3>
 
@@ -209,12 +237,12 @@ export default function Tasks() {
                             </div>
 
                             <div className="px-5 py-3 bg-white/70 border-t border-white/20 flex items-center justify-between backdrop-blur-sm">
-                                {task.deadline ? (
+                                {task.assignedDate ? (
                                     <span className={clsx("text-xs flex items-center gap-1",
-                                        new Date(task.deadline) < new Date() && task.status !== 'Completed' ? "text-red-600 font-bold" : "text-gray-600 font-medium"
+                                        new Date(task.assignedDate) < new Date(new Date().setHours(0, 0, 0, 0)) && task.status !== 'Completed' ? "text-red-600 font-bold" : "text-gray-600 font-medium"
                                     )}>
-                                        <AlertTriangle className="w-3 h-3" />
-                                        {format(new Date(task.deadline), 'MMM d')}
+                                        <CalendarIcon className="w-3 h-3" />
+                                        {format(new Date(task.assignedDate), 'MMM d')}
                                     </span>
                                 ) : (
                                     <span></span>
@@ -242,6 +270,7 @@ export default function Tasks() {
                 onClose={() => setIsModalOpen(false)}
                 onSubmit={editingTask ? handleUpdate : handleCreate}
                 initialData={editingTask}
+                selectedDate={selectedDate}
             />
         </div>
     );

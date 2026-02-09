@@ -138,7 +138,7 @@ export default function Dashboard() {
                             </div>
                             <div className="mt-4 pt-4 flex justify-between items-center">
                                 <span className="text-xs text-orange-800 font-medium flex items-center gap-1">
-                                    Due: {nextImportantTask.deadline || "No deadline"}
+                                    Due: {nextImportantTask.assignedDate ? format(new Date(nextImportantTask.assignedDate), 'MMM d, yyyy') : "No deadline"}
                                 </span>
                                 <Link to="/tasks" className="text-sm font-medium text-orange-900 hover:underline">View Details</Link>
                             </div>

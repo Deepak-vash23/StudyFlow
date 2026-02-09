@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X, Calendar as CalendarIcon, Clock, Tag, AlertCircle } from 'lucide-react';
 
-export default function TaskForm({ isOpen, onClose, onSubmit, initialData = null }) {
+export default function TaskForm({ isOpen, onClose, onSubmit, initialData = null, selectedDate = null }) {
     const [formData, setFormData] = useState({
         title: '',
         description: '',
@@ -9,12 +9,15 @@ export default function TaskForm({ isOpen, onClose, onSubmit, initialData = null
         importance: 'Medium',
         estimatedTime: '',
         estimatedTimeUnit: 'mins',
-        deadline: ''
+        assignedDate: ''
     });
 
     useEffect(() => {
         if (initialData) {
-            setFormData(initialData);
+            setFormData({
+                ...initialData,
+                assignedDate: initialData.assignedDate ? new Date(initialData.assignedDate).toISOString().split('T')[0] : ''
+            });
         } else {
             setFormData({
                 title: '',
@@ -23,10 +26,10 @@ export default function TaskForm({ isOpen, onClose, onSubmit, initialData = null
                 importance: 'Medium',
                 estimatedTime: '',
                 estimatedTimeUnit: 'mins',
-                deadline: ''
+                assignedDate: selectedDate ? new Date(selectedDate).toISOString().split('T')[0] : ''
             });
         }
-    }, [initialData, isOpen]);
+    }, [initialData, isOpen, selectedDate]);
 
     if (!isOpen) return null;
 
@@ -145,7 +148,7 @@ export default function TaskForm({ isOpen, onClose, onSubmit, initialData = null
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Deadline</label>
+                                    <label className="block text-sm font-medium text-gray-700">Date</label>
                                     <div className="mt-1 relative rounded-md shadow-sm">
                                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                             <CalendarIcon className="h-4 w-4 text-gray-400" />
@@ -153,8 +156,8 @@ export default function TaskForm({ isOpen, onClose, onSubmit, initialData = null
                                         <input
                                             type="date"
                                             className="block w-full pl-10 border border-gray-300 rounded-md shadow-sm py-2 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                                            value={formData.deadline}
-                                            onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
+                                            value={formData.assignedDate}
+                                            onChange={(e) => setFormData({ ...formData, assignedDate: e.target.value })}
                                         />
                                     </div>
                                 </div>

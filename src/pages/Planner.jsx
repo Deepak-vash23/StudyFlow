@@ -40,7 +40,7 @@ export default function Planner() {
         const task = tasks.find(t => t.id === taskId);
         if (!task) return 'bg-gray-50/50 border-gray-200/50 text-gray-800';
 
-        if (task.status === 'Failed') return 'bg-red-50/50 border-red-200/50 text-red-800';
+        if (task.status === 'Failed') return 'bg-gray-200/50 border-gray-300/50 text-gray-500 line-through';
 
         switch (task.importance) {
             case 'Low': return 'bg-green-50/50 border-green-200/50 text-green-800';
@@ -162,6 +162,7 @@ export default function Planner() {
                 onClose={() => setIsModalOpen(false)}
                 onSubmit={editingSlot ? handleUpdate : handleCreate}
                 initialData={editingSlot}
+                selectedDate={formattedDate}
             />
         </div>
     );
