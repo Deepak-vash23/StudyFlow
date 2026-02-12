@@ -14,12 +14,13 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ message: 'User already exists with this email' });
         }
 
-        // Create new user (Note: In production, hash the password with bcrypt)
         const user = new User({
             name,
             email,
-            password // WARNING: Store hashed password in production!
+            password
         });
+
+
 
         await user.save();
 
@@ -53,24 +54,28 @@ router.post('/login', async (req, res) => {
         console.log(`User found. stored pass: ${user.password}, provided pass: ${password}`);
 
         // Check password (Note: In production, use bcrypt.compare)
-        if (user.password !== password) {
+        // Check password
+        if (user && (await user.matchPassword(password))) {
+            // Updated last active date
+            user.stats.lastActiveDate = new Date();
+            await user.save();
+
+            res.json({
+                message: 'Login successful',
+                user: {
+                    id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    stats: user.stats
+                }
+            });
+        } else {
             console.log('Password mismatch');
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        // Update last active date
-        user.stats.lastActiveDate = new Date();
-        await user.save();
 
-        res.json({
-            message: 'Login successful',
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                stats: user.stats
-            }
-        });
+
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
