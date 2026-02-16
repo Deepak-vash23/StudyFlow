@@ -10,7 +10,8 @@ const transporter = nodemailer.createTransport({
     auth: {
         user: process.env.EMAIL,
         pass: process.env.EMAIL_PASSWORD
-    }
+    },
+    family: 4 // Force IPv4 to avoid ENETUNREACH on some cloud providers
 });
 
 // Register new user
