@@ -8,6 +8,8 @@ const startFailureCheckJob = () => {
 
         try {
             const now = new Date();
+            const currentHours = now.getHours();
+            const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             // ONLY run this logic if it is past 11:00 PM (23:00)
             if (currentHours < 23) {
                 console.log('Not yet 11 PM. Skipping failure check.');

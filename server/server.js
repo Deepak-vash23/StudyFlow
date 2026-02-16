@@ -1,12 +1,10 @@
+import 'dotenv/config'; // Load env vars immediately
 import express from 'express';
-import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import startFailureCheckJob from './jobs/failureCheck.js';
 import Task from './models/Task.js';
 import authRoutes from './routes/auth.js';
-
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
