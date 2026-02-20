@@ -1,3 +1,5 @@
+import colors from 'tailwindcss/colors';
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -7,23 +9,27 @@ export default {
   theme: {
     extend: {
       colors: {
+        background: '#0F172A',
+        surface: '#1E293B',
+        card: '#1A2332',
         primary: {
-          50: '#eef2ff',
-          100: '#e0e7ff',
-          500: '#6366f1', // Indigo
-          600: '#4f46e5',
-          700: '#4338ca',
+          ...colors.sky,
+          DEFAULT: colors.sky[400], // #38BDF8
+          text: '#E2E8F0',
         },
-        secondary: '#ec4899', // Pink
-        accent: '#8b5cf6', // Violet
-        success: '#10b981', // Emerald
-        warning: '#f59e0b', // Amber
-        danger: '#ef4444', // Red
-        background: '#f8fafc', // Slate 50
-        surface: '#ffffff',
+        secondary: {
+          ...colors.gray,
+          DEFAULT: colors.gray[900], // #1E293B
+          text: '#94A3B8',
+        },
+        muted: '#64748B',
+        success: '#22C55E',
+        error: '#EF4444', // "Failed"
+        warning: '#F59E0B',
+        info: '#38BDF8',
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'], // We'll need to import Inter or use system
+        sans: ['Inter', 'sans-serif'], 
       }
     },
   },

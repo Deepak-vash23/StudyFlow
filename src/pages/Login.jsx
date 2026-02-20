@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { BookOpen, AlertCircle } from 'lucide-react';
-
-import Grainient from '../components/Grainient';
+import { BookOpen, AlertCircle, Eye, EyeOff } from 'lucide-react';
 
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const { login } = useAuth();
@@ -32,64 +31,47 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-screen relative overflow-hidden flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-            {/* Background Layer */}
-            <div className="absolute inset-0 z-0 pointer-events-none">
-                <Grainient
-                    color1="#FF9FFC"
-                    color2="#5227FF"
-                    color3="#B19EEF"
-                    timeSpeed={0.25}
-                    colorBalance={0}
-                    warpStrength={1}
-                    warpFrequency={5}
-                    warpSpeed={2}
-                    warpAmplitude={50}
-                    blendAngle={0}
-                    blendSoftness={0.05}
-                    rotationAmount={500}
-                    noiseScale={2}
-                    grainAmount={0.1}
-                    grainScale={2}
-                    grainAnimated={false}
-                    contrast={1.5}
-                    gamma={1}
-                    saturation={1}
-                    centerX={0}
-                    centerY={0}
-                    zoom={0.9}
-                />
+        <div className="min-h-screen relative overflow-hidden flex flex-col justify-center items-center py-12 sm:px-6 lg:px-8 bg-background font-sans">
+            {/* Decorative Background Elements */}
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+                <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] bg-primary-900/20 rounded-full blur-[120px]" />
+                <div className="absolute top-[40%] -right-[10%] w-[40%] h-[40%] bg-blue-900/10 rounded-full blur-[100px]" />
             </div>
 
-            <div className="relative z-10 sm:mx-auto sm:w-full sm:max-w-md">
-                <div className="flex justify-center">
-                    <div className="w-12 h-12 rounded-xl bg-primary-600/90 backdrop-blur-sm flex items-center justify-center text-white shadow-lg">
-                        <BookOpen className="w-6 h-6" />
+            <div className="relative z-10 w-full max-w-[400px]"> {/* Adjusted width to match reference roughly */}
+                <div
+                    className="bg-card py-10 px-10 rounded-[50px] text-center"
+                    style={{
+                        boxShadow: '8px 8px 16px rgba(0, 0, 0, 0.6), -8px -8px 16px rgba(255, 255, 255, 0.05)',
+                        border: '1px solid rgba(255, 255, 255, 0.05)'
+                    }}
+                >
+                    <div className="flex justify-center mb-6">
+                        {/* Icon - keeping existing logic but styling to match theme */}
+                        <div className="w-16 h-16 rounded-full flex items-center justify-center text-primary-400"
+                            style={{
+                                background: 'var(--bg-card)', // Conceptual, using transparent or specific
+                                boxShadow: 'inset 6px 6px 10px 0 rgba(0, 0, 0, 0.6), inset -6px -6px 10px 0 rgba(255, 255, 255, 0.05)'
+                            }}>
+                            <BookOpen className="w-8 h-8" />
+                        </div>
                     </div>
-                </div>
-                <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                    Sign in to StudyFlow
-                </h2>
-                <p className="mt-2 text-center text-sm text-gray-700 font-medium">
-                    Your personal student productivity assistant
-                </p>
-            </div>
 
-            <div className="mt-8 relative z-10 sm:mx-auto sm:w-full sm:max-w-md">
-                <div className="bg-white/80 backdrop-blur-md py-8 px-4 shadow-xl sm:rounded-lg sm:px-10 border border-white/20">
+                    <h2 className="text-3xl font-bold text-gray-100 mb-8 tracking-wide">
+                        Welcome Back
+                    </h2>
+
                     <form className="space-y-6" onSubmit={handleSubmit}>
                         {error && (
-                            <div className="bg-red-50/90 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start gap-2">
+                            <div className="bg-error/10 border border-error/20 text-error px-4 py-3 rounded-2xl flex items-start gap-3">
                                 <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
-                                <span className="text-sm">{error}</span>
+                                <span className="text-sm font-medium">{error}</span>
                             </div>
                         )}
 
-                        <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                                Email address
-                            </label>
-                            <div className="mt-1">
+                        <div className="space-y-5">
+                            <div>
+                                <label htmlFor="email" className="sr-only">Email address</label>
                                 <input
                                     id="email"
                                     name="email"
@@ -98,59 +80,81 @@ export default function Login() {
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm bg-white/50"
-                                    placeholder="student@example.com"
+                                    className="w-full px-6 py-4 rounded-[50px] bg-card text-gray-100 placeholder-gray-500 focus:outline-none transition-all"
+                                    style={{
+                                        boxShadow: 'inset 6px 6px 10px 0 rgba(0, 0, 0, 0.6), inset -6px -6px 10px 0 rgba(255, 255, 255, 0.05)'
+                                    }}
+                                    placeholder="Username or Email"
                                 />
                             </div>
-                        </div>
 
-                        <div>
-                            <div className="flex items-center justify-between">
-                                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                                    Password
-                                </label>
-                                <div className="text-sm">
-                                    <Link to="/forgot-password" className="font-medium text-primary-600 hover:text-primary-500">
-                                        Forgot your password?
-                                    </Link>
-                                </div>
-                            </div>
-                            <div className="mt-1">
+                            <div className="relative">
+                                <label htmlFor="password" className="sr-only">Password</label>
                                 <input
                                     id="password"
                                     name="password"
-                                    type="password"
+                                    type={showPassword ? "text" : "password"}
                                     autoComplete="current-password"
                                     required
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm bg-white/50"
+                                    className="w-full px-6 py-4 rounded-[50px] bg-card text-gray-100 placeholder-gray-500 focus:outline-none transition-all pr-12"
+                                    style={{
+                                        boxShadow: 'inset 6px 6px 10px 0 rgba(0, 0, 0, 0.6), inset -6px -6px 10px 0 rgba(255, 255, 255, 0.05)'
+                                    }}
+                                    placeholder="Password"
                                 />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 focus:outline-none"
+                                >
+                                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                </button>
                             </div>
                         </div>
 
-                        <div>
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {loading ? 'Signing in...' : 'Sign in'}
-                            </button>
+                        <div className="text-right">
+                            <Link to="/forgot-password" className="text-sm font-medium text-primary-400 hover:text-primary-300 transition-colors">
+                                Forgot password?
+                            </Link>
                         </div>
 
-                        <div className="relative">
-                            <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-gray-300" />
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full py-4 px-6 rounded-[50px] font-semibold text-white bg-primary-600 hover:-translate-y-0.5 active:translate-y-0.5 transition-all text-base"
+                            style={{
+                                boxShadow: '6px 6px 10px rgba(0, 0, 0, 0.4), -6px -6px 10px rgba(255, 255, 255, 0.05)'
+                            }}
+                        >
+                            {loading ? 'Signing in...' : 'Login'}
+                        </button>
+
+                        <div className="mt-8 pt-4">
+                            <p className="text-gray-400 text-sm mb-4">Or login with</p>
+                            {/* Placeholder for social icons if needed, or just the signup link */}
+                            <div className="flex justify-center gap-4 mb-6">
+                                {/* Example Social Buttons matching reference structure */}
+                                <button type="button" className="w-12 h-12 rounded-full flex items-center justify-center text-gray-300 hover:text-primary-400 hover:-translate-y-1 transition-all"
+                                    style={{
+                                        background: 'var(--bg-card)',
+                                        boxShadow: '8px 8px 16px rgba(0, 0, 0, 0.6), -8px -8px 16px rgba(255, 255, 255, 0.05)'
+                                    }}>
+                                    G
+                                </button>
+                                <button type="button" className="w-12 h-12 rounded-full flex items-center justify-center text-gray-300 hover:text-primary-400 hover:-translate-y-1 transition-all"
+                                    style={{
+                                        background: 'var(--bg-card)',
+                                        boxShadow: '8px 8px 16px rgba(0, 0, 0, 0.6), -8px -8px 16px rgba(255, 255, 255, 0.05)'
+                                    }}>
+                                    f
+                                </button>
                             </div>
-                            <div className="relative flex justify-center text-sm">
-                                <span className="px-2 bg-transparent text-gray-500 rounded">
-                                    New user?{' '}
-                                    <Link to="/signup" className="font-medium text-primary-600 hover:text-primary-500">
-                                        Create an account first
-                                    </Link>
-                                </span>
-                            </div>
+
+                            <Link to="/signup" className="text-sm font-medium text-primary-400 hover:text-primary-300 transition-colors block">
+                                Create an account
+                            </Link>
                         </div>
                     </form>
                 </div>

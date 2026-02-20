@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Micro-Interactions</title>
+    <link rel="stylesheet" href="micro-interaction.css">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="interaction-grid">
+        <!-- 1. Morphing Button -->
+        <div class="card">
+            <h3>Morphing Button</h3>
+            <div class="button-wrapper">
+                <button class="morph-btn" id="submitBtn">
+                    <span class="btn-text">Submit</span>
+                    <i class="fas fa-check check-icon"></i>
+                    <i class="fas fa-spinner fa-spin loader-icon"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 2. Toggle Switch -->
+        <div class="card">
+            <h3>Day/Night Toggle</h3>
+            <label class="toggle-switch">
+                <input type="checkbox" id="themeToggle">
+                <span class="slider">
+                    <span class="icon sun"><i class="fas fa-sun"></i></span>
+                    <span class="icon moon"><i class="fas fa-moon"></i></span>
+                </span>
+            </label>
+        </div>
+
+        <!-- 3. Like Button -->
+        <div class="card">
+            <h3>Like Animation</h3>
+            <button class="like-btn" id="likeBtn">
+                <i class="fas fa-heart"></i>
+            </button>
+        </div>
+
+        <!-- 4. Input Field -->
+        <div class="card">
+            <h3>Float Label Input</h3>
+            <div class="input-group">
+                <input type="text" id="email" placeholder=" " required>
+                <label for="email">Email Address</label>
+                <div class="bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Morphing Button Logic
+        const btn = document.getElementById('submitBtn');
+        btn.addEventListener('click', () => {
+            if (btn.classList.contains('loading') || btn.classList.contains('success')) return;
+
+            btn.classList.add('loading');
+
+            setTimeout(() => {
+                btn.classList.remove('loading');
+                btn.classList.add('success');
+
+                setTimeout(() => {
+                    btn.classList.remove('success');
+                }, 2000);
+            }, 1500);
+        });
+
+        // Like Button Logic
+        const likeBtn = document.getElementById('likeBtn');
+        likeBtn.addEventListener('click', () => {
+            likeBtn.classList.toggle('active');
+            if (likeBtn.classList.contains('active')) {
+                likeBtn.style.animation = 'pop 0.3s ease forwards';
+                setTimeout(() => likeBtn.style.animation = '', 300);
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTasks } from '../context/TaskContext';
 import { X } from 'lucide-react';
+import clsx from 'clsx';
 
 const TimeSelect = ({ label, value, onChange }) => {
     // Parse HH:mm to 12-hour format
@@ -35,12 +36,14 @@ const TimeSelect = ({ label, value, onChange }) => {
         onChange(time24);
     };
 
+    const selectClasses = "block w-full bg-surface border border-white/10 rounded-xl shadow-sm py-2 px-3 text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 sm:text-sm";
+
     return (
         <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+            <label className="block text-sm font-medium text-gray-400 mb-1">{label}</label>
             <div className="flex gap-2">
                 <select
-                    className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                    className={selectClasses}
                     value={localState.hour}
                     onChange={(e) => handleChange('hour', e.target.value)}
                 >
@@ -48,9 +51,9 @@ const TimeSelect = ({ label, value, onChange }) => {
                         <option key={h} value={h.toString().padStart(2, '0')}>{h}</option>
                     ))}
                 </select>
-                <span className="self-center font-bold text-gray-400">:</span>
+                <span className="self-center font-bold text-gray-500">:</span>
                 <select
-                    className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                    className={selectClasses}
                     value={localState.minute}
                     onChange={(e) => handleChange('minute', e.target.value)}
                 >
@@ -59,7 +62,7 @@ const TimeSelect = ({ label, value, onChange }) => {
                     ))}
                 </select>
                 <select
-                    className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                    className={selectClasses}
                     value={localState.period}
                     onChange={(e) => handleChange('period', e.target.value)}
                 >
@@ -127,27 +130,30 @@ export default function SlotForm({ isOpen, onClose, onSubmit, initialData = null
         onClose();
     };
 
+    const inputClasses = "mt-1 block w-full bg-surface border border-white/10 rounded-xl shadow-sm py-2.5 px-3 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 sm:text-sm transition-all";
+    const labelClasses = "block text-sm font-medium text-gray-400 mb-1";
+
     return (
         <div className="fixed inset-0 z-50 overflow-y-auto">
-            <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div className="flex items-center justify-center min-h-screen px-4 pb-20 text-center sm:block sm:p-0">
                 <div className="fixed inset-0 transition-opacity" aria-hidden="true">
-                    <div className="absolute inset-0 bg-gray-500 opacity-75" onClick={onClose}></div>
+                    <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={onClose}></div>
                 </div>
 
                 <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
-                <div className="inline-block align-bottom bg-white/90 backdrop-blur-xl rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-white/20">
-                    <div className="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-bold text-gray-900">
+                <div className="inline-block align-bottom bg-card rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-white/10">
+                    <div className="px-6 pt-6 pb-6">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-xl font-bold text-gray-100">
                                 {initialData ? 'Edit Time Slot' : 'Add Time Slot'}
                             </h3>
-                            <button onClick={onClose} className="p-1 hover:bg-black/5 rounded-full transition-colors text-gray-400 hover:text-gray-500">
+                            <button onClick={onClose} className="p-1 hover:bg-white/5 rounded-lg transition-colors text-gray-400 hover:text-gray-200">
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-4">
+                        <form onSubmit={handleSubmit} className="space-y-5">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <TimeSelect
                                     label="Start Time"
@@ -162,9 +168,9 @@ export default function SlotForm({ isOpen, onClose, onSubmit, initialData = null
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Link a Task (Optional)</label>
+                                <label className={labelClasses}>Link a Task (Optional)</label>
                                 <select
-                                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                    className={inputClasses}
                                     value={formData.taskId}
                                     onChange={(e) => setFormData({ ...formData, taskId: e.target.value })}
                                 >
@@ -176,30 +182,30 @@ export default function SlotForm({ isOpen, onClose, onSubmit, initialData = null
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Label / Activity Name</label>
+                                <label className={labelClasses}>Label / Activity Name</label>
                                 <input
                                     type="text"
                                     required
                                     placeholder="e.g. Morning Study"
-                                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                    className={inputClasses}
                                     value={formData.label}
                                     onChange={(e) => setFormData({ ...formData, label: e.target.value })}
                                 />
                             </div>
 
-                            <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
-                                <button
-                                    type="submit"
-                                    className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary-600 text-base font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:col-start-2 sm:text-sm"
-                                >
-                                    Save Slot
-                                </button>
+                            <div className="pt-4 flex gap-3">
                                 <button
                                     type="button"
-                                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:mt-0 sm:col-start-1 sm:text-sm"
+                                    className="flex-1 px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-gray-300 font-medium hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
                                     onClick={onClose}
                                 >
                                     Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="flex-1 px-4 py-2.5 bg-primary-600 border border-transparent rounded-xl text-white font-bold hover:bg-primary-500 transition-colors shadow-lg shadow-primary-900/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                                >
+                                    Save Slot
                                 </button>
                             </div>
                         </form>

@@ -2,9 +2,11 @@ import { useState } from 'react';
 import { usePlanner } from '../context/PlannerContext';
 import { useTasks } from '../context/TaskContext';
 import { format, addDays, subDays, parseISO, isBefore, startOfToday, parse } from 'date-fns';
-import { ChevronLeft, ChevronRight, Plus, X, Trash2, Edit2, CheckCircle2, Circle, XCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, X, Trash2, Edit2, CheckCircle2, Circle, XCircle, Calendar as CalendarIcon, Clock } from 'lucide-react';
 import SlotForm from '../components/SlotForm';
 import clsx from 'clsx';
+import Card from '../components/Card';
+import Badge from '../components/Badge';
 
 export default function Planner() {
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -36,60 +38,68 @@ export default function Planner() {
 
     // Helper to get color based on linked task importance
     const getSlotColor = (taskId) => {
-        if (!taskId) return 'bg-blue-50/50 border-blue-200/50 text-blue-800';
+        if (!taskId) return 'bg-secondary border-white/5 text-gray-300';
         const task = tasks.find(t => t.id === taskId);
-        if (!task) return 'bg-gray-50/50 border-gray-200/50 text-gray-800';
+        if (!task) return 'bg-secondary border-white/5 text-gray-300';
 
-        if (task.status === 'Failed') return 'bg-gray-200/50 border-gray-300/50 text-gray-500 line-through';
+        if (task.status === 'Failed') return 'bg-error/10 border-error/20 text-error line-through';
+        if (task.status === 'Completed') return 'bg-success/10 border-success/20 text-gray-400 line-through opacity-70';
 
         switch (task.importance) {
-            case 'Low': return 'bg-green-50/50 border-green-200/50 text-green-800';
-            case 'Medium': return 'bg-yellow-50/50 border-yellow-200/50 text-yellow-800';
-            case 'High': return 'bg-orange-50/50 border-orange-200/50 text-orange-800';
-            case 'Critical': return 'bg-red-50/50 border-red-200/50 text-red-800';
-            default: return 'bg-blue-50/50 border-blue-200/50 text-blue-800';
+            case 'Low': return 'bg-blue-500/10 border-blue-500/20 text-blue-200';
+            case 'Medium': return 'bg-yellow-500/10 border-yellow-500/20 text-yellow-200';
+            case 'High': return 'bg-orange-500/10 border-orange-500/20 text-orange-200';
+            case 'Critical': return 'bg-red-500/10 border-red-500/20 text-red-200';
+            default: return 'bg-secondary border-white/5 text-gray-300';
         }
     };
 
     return (
-        <div className="space-y-6 h-full flex flex-col">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="space-y-6 h-[calc(100vh-140px)] flex flex-col">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/5 pb-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Daily Planner</h1>
-                    <p className="text-gray-500">Structure your day for maximum productivity</p>
+                    <h1 className="text-3xl font-bold text-gray-100">Daily Planner</h1>
+                    <p className="text-gray-400 mt-1">Structure your day for maximum productivity</p>
                 </div>
 
-                <div className="flex items-center gap-4 bg-white/70 backdrop-blur-xl p-1 rounded-xl border border-white/20 shadow-sm">
-                    <button onClick={() => setSelectedDate(subDays(selectedDate, 1))} className="p-1 hover:bg-white/50 rounded-lg transition-colors">
-                        <ChevronLeft className="w-5 h-5 text-gray-600" />
-                    </button>
-                    <span className="font-medium text-gray-700 min-w-[140px] text-center">
-                        {format(selectedDate, 'EEEE, MMM d')}
-                    </span>
-                    <button onClick={() => setSelectedDate(addDays(selectedDate, 1))} className="p-1 hover:bg-white/50 rounded-lg transition-colors">
-                        <ChevronRight className="w-5 h-5 text-gray-600" />
-                    </button>
-                </div>
+                <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 bg-card p-1 rounded-xl border border-white/5 shadow-sm">
+                        <button onClick={() => setSelectedDate(subDays(selectedDate, 1))} className="p-2 hover:bg-white/5 rounded-lg transition-colors text-gray-400 hover:text-gray-100">
+                            <ChevronLeft className="w-5 h-5" />
+                        </button>
+                        <span className="font-medium text-gray-200 min-w-[140px] text-center flex items-center justify-center gap-2">
+                            <CalendarIcon className="w-4 h-4 text-gray-500" />
+                            {format(selectedDate, 'EEEE, MMM d')}
+                        </span>
+                        <button onClick={() => setSelectedDate(addDays(selectedDate, 1))} className="p-2 hover:bg-white/5 rounded-lg transition-colors text-gray-400 hover:text-gray-100">
+                            <ChevronRight className="w-5 h-5" />
+                        </button>
+                    </div>
 
-                {!isPastDate && (
-                    <button
-                        onClick={() => { setEditingSlot(null); setIsModalOpen(true); }}
-                        className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors shadow-sm"
-                    >
-                        <Plus className="w-5 h-5" />
-                        <span>Add Slot</span>
-                    </button>
-                )}
+                    {!isPastDate && (
+                        <button
+                            onClick={() => { setEditingSlot(null); setIsModalOpen(true); }}
+                            className="flex items-center gap-2 px-4 py-2.5 bg-primary-600 text-white rounded-xl hover:bg-primary-500 transition-colors shadow-lg shadow-primary-900/20 font-medium text-sm"
+                        >
+                            <Plus className="w-5 h-5" />
+                            <span className="hidden sm:inline">Add Slot</span>
+                        </button>
+                    )}
+                </div>
             </div>
 
-            <div className="flex-1 bg-white/70 backdrop-blur-xl rounded-2xl shadow-sm border border-white/20 flex flex-col relative overflow-hidden">
-                {/* Simple Time Column Visualization */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-2">
+            <Card className="flex-1 flex flex-col relative overflow-hidden bg-card border-white/5">
+                <div className="flex-1 overflow-y-auto p-6 space-y-3 custom-scrollbar">
                     {dailySlots.length === 0 ? (
-                        <div className="h-full flex flex-col items-center justify-center text-gray-400">
-                            <p>{isPastDate ? "No slots were scheduled for this day." : "No slots scheduled for this day."}</p>
+                        <div className="h-full flex flex-col items-center justify-center text-gray-500">
+                            <div className="p-4 bg-white/5 rounded-full mb-4">
+                                <Clock className="w-8 h-8 text-gray-600" />
+                            </div>
+                            <p className="text-lg font-medium text-gray-400">{isPastDate ? "No slots were scheduled." : "No slots scheduled for today."}</p>
                             {!isPastDate && (
-                                <button onClick={() => setIsModalOpen(true)} className="mt-2 text-primary-600 hover:underline">Plan your day</button>
+                                <button onClick={() => setIsModalOpen(true)} className="mt-2 text-primary-400 hover:text-primary-300 font-medium transition-colors">
+                                    Start planning your day &rarr;
+                                </button>
                             )}
                         </div>
                     ) : (
@@ -97,55 +107,61 @@ export default function Planner() {
                             <div
                                 key={slot.id}
                                 className={clsx(
-                                    "flex items-center gap-4 p-3 rounded-xl border-l-4 transition-all hover:shadow-md hover:bg-white/40",
+                                    "group flex items-center gap-4 p-4 rounded-xl border-l-4 transition-all hover:bg-white/5",
                                     getSlotColor(slot.taskId),
-                                    slot.completed && "opacity-60 grayscale"
+                                    slot.completed && "opacity-60"
                                 )}
                             >
-                                <div className="flex flex-col min-w-[80px] text-center">
-                                    <span className="text-sm font-semibold">
+                                <div className="flex flex-col min-w-[90px] text-center border-r border-white/5 pr-4">
+                                    <span className="text-base font-bold text-gray-200">
                                         {format(parse(slot.startTime, 'HH:mm', new Date()), 'h:mm a')}
                                     </span>
-                                    <span className="text-xs opacity-75">
+                                    <span className="text-xs font-medium text-gray-500">
                                         {format(parse(slot.endTime, 'HH:mm', new Date()), 'h:mm a')}
                                     </span>
                                 </div>
 
-                                <div className="flex-1">
-                                    <h4 className={clsx("font-medium text-lg", slot.completed && "line-through")}>{slot.label}</h4>
+                                <div className="flex-1 pl-2">
+                                    <h4 className={clsx("font-semibold text-lg text-gray-100", slot.completed && "line-through text-gray-500")}>
+                                        {slot.label}
+                                    </h4>
                                     {slot.taskId && (
-                                        <span className="text-xs bg-white bg-opacity-50 px-2 py-0.5 rounded-full inline-block mt-1">
-                                            Linked Task
-                                        </span>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <Badge type="info" className="text-[10px] py-0 px-1.5 h-5">Linked Task</Badge>
+                                            <span className="text-xs text-gray-500 truncate max-w-[200px]">
+                                                {tasks.find(t => t.id === slot.taskId)?.title}
+                                            </span>
+                                        </div>
                                     )}
                                 </div>
 
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
                                     <button
                                         onClick={() => toggleSlotCompletion(slot.id)}
                                         disabled={slot.failed}
-                                        className={clsx("p-2 hover:bg-white hover:bg-opacity-50 rounded-full transition-colors",
-                                            slot.failed && "opacity-50 cursor-not-allowed"
+                                        className={clsx("p-2 rounded-lg transition-colors",
+                                            slot.completed ? "text-success hover:bg-success/10" : "text-gray-400 hover:text-gray-200 hover:bg-white/10",
+                                            slot.failed && "text-error opacity-50 cursor-not-allowed"
                                         )}
                                         title={slot.completed ? "Mark as Incomplete" : slot.failed ? "Task Failed" : "Mark as Complete"}
                                     >
                                         {slot.completed ? <CheckCircle2 className="w-6 h-6" /> : slot.failed ? <XCircle className="w-6 h-6" /> : <Circle className="w-6 h-6" />}
                                     </button>
 
-                                    <div className="h-6 w-px bg-current opacity-20 mx-1"></div>
+                                    <div className="h-6 w-px bg-white/10 mx-1"></div>
 
                                     <button
                                         onClick={() => openEditModal(slot)}
                                         disabled={slot.failed}
-                                        className={clsx("p-1.5 rounded-md",
-                                            slot.failed ? "opacity-30 cursor-not-allowed" : "hover:bg-white hover:bg-opacity-50"
+                                        className={clsx("p-2 rounded-lg text-gray-400 transition-colors",
+                                            slot.failed ? "opacity-30 cursor-not-allowed" : "hover:text-primary-400 hover:bg-white/10"
                                         )}
                                     >
                                         <Edit2 className="w-4 h-4" />
                                     </button>
                                     <button
                                         onClick={() => deleteSlot(slot.id)}
-                                        className="p-1.5 rounded-md hover:bg-white hover:bg-opacity-50 text-red-600 hover:text-red-700 transition-colors"
+                                        className="p-2 rounded-lg text-gray-400 hover:text-error hover:bg-error/10 transition-colors"
                                         title="Delete Slot"
                                     >
                                         <Trash2 className="w-4 h-4" />
@@ -155,7 +171,7 @@ export default function Planner() {
                         ))
                     )}
                 </div>
-            </div>
+            </Card>
 
             <SlotForm
                 isOpen={isModalOpen}

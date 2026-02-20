@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, AlertCircle, ArrowLeft } from 'lucide-react';
-import Grainient from '../components/Grainient';
 
 export default function ForgotPassword() {
     const [email, setEmail] = useState('');
@@ -39,97 +38,102 @@ export default function ForgotPassword() {
     };
 
     return (
-        <div className="min-h-screen relative overflow-hidden flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-            {/* Background Layer */}
-            <div className="absolute inset-0 z-0 pointer-events-none">
-                <Grainient
-                    color1="#FF9FFC"
-                    color2="#5227FF"
-                    color3="#B19EEF"
-                    timeSpeed={0.25}
-                    colorBalance={0}
-                    warpStrength={1}
-                />
+        <div className="min-h-screen relative overflow-hidden flex flex-col justify-center py-12 sm:px-6 lg:px-8 bg-background">
+            {/* Decorative Background Elements */}
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+                <div className="absolute top-[10%] left-[20%] w-[40%] h-[40%] bg-primary-900/20 rounded-full blur-[120px]" />
             </div>
 
-            <div className="relative z-10 sm:mx-auto sm:w-full sm:max-w-md">
-                <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                    Reset your password
-                </h2>
-                <p className="mt-2 text-center text-sm text-gray-700 font-medium">
-                    Enter your email and we'll send you a link to reset your password.
-                </p>
-            </div>
+            <div className="relative z-10 w-full max-w-[400px]">
+                <div
+                    className="bg-card py-10 px-10 rounded-[50px] text-center"
+                    style={{
+                        boxShadow: '8px 8px 16px rgba(0, 0, 0, 0.6), -8px -8px 16px rgba(255, 255, 255, 0.05)',
+                        border: '1px solid rgba(255, 255, 255, 0.05)'
+                    }}
+                >
+                    <div className="flex justify-center mb-6">
+                        <div className="w-16 h-16 rounded-full flex items-center justify-center text-primary-400"
+                            style={{
+                                background: 'var(--bg-card)',
+                                boxShadow: 'inset 6px 6px 10px 0 rgba(0, 0, 0, 0.6), inset -6px -6px 10px 0 rgba(255, 255, 255, 0.05)'
+                            }}>
+                            <Mail className="w-8 h-8" />
+                        </div>
+                    </div>
 
-            <div className="mt-8 relative z-10 sm:mx-auto sm:w-full sm:max-w-md">
-                <div className="bg-white/80 backdrop-blur-md py-8 px-4 shadow-xl sm:rounded-lg sm:px-10 border border-white/20">
+                    <h2 className="text-3xl font-bold text-gray-100 mb-2 tracking-wide">
+                        Reset Password
+                    </h2>
+                    <p className="text-gray-400 text-sm mb-8">
+                        Enter your mail to receive reset link
+                    </p>
+
                     <form className="space-y-6" onSubmit={handleSubmit}>
                         {error && (
-                            <div className="bg-red-50/90 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start gap-2">
+                            <div className="bg-error/10 border border-error/20 text-error px-4 py-3 rounded-2xl flex items-start gap-3">
                                 <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
-                                <span className="text-sm">{error}</span>
+                                <span className="text-sm font-medium">{error}</span>
                             </div>
                         )}
                         {message && (
-                            <div className="bg-green-50/90 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-start gap-2">
-                                <span className="text-sm">{message}</span>
+                            <div className="bg-success/10 border border-success/20 text-success px-4 py-3 rounded-2xl flex items-start gap-3">
+                                <span className="text-sm font-medium">{message}</span>
                             </div>
                         )}
 
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                                Email address
-                            </label>
-                            <div className="mt-1 relative rounded-md shadow-sm">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Mail className="h-5 w-5 text-gray-400" aria-hidden="true" />
-                                </div>
-                                <input
-                                    id="email"
-                                    name="email"
-                                    type="email"
-                                    autoComplete="email"
-                                    required
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className="focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md bg-white/50 py-2"
-                                    placeholder="you@example.com"
-                                />
-                            </div>
+                            <label htmlFor="email" className="sr-only">Email address</label>
+                            <input
+                                id="email"
+                                name="email"
+                                type="email"
+                                autoComplete="email"
+                                required
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="w-full px-6 py-4 rounded-[50px] bg-card text-gray-100 placeholder-gray-500 focus:outline-none transition-all"
+                                style={{
+                                    boxShadow: 'inset 6px 6px 10px 0 rgba(0, 0, 0, 0.6), inset -6px -6px 10px 0 rgba(255, 255, 255, 0.05)'
+                                }}
+                                placeholder="Email Address"
+                            />
                         </div>
 
-                        <div>
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
-                            >
-                                {loading ? 'Sending...' : 'Send Reset Link'}
-                            </button>
-                        </div>
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full py-4 px-6 rounded-[50px] font-semibold text-white bg-primary-600 hover:-translate-y-0.5 active:translate-y-0.5 transition-all text-base"
+                            style={{
+                                boxShadow: '6px 6px 10px rgba(0, 0, 0, 0.4), -6px -6px 10px rgba(255, 255, 255, 0.05)'
+                            }}
+                        >
+                            {loading ? 'Sending...' : 'Send Reset Link'}
+                        </button>
+
                     </form>
 
-                    <div className="mt-6">
+                    <div className="mt-8">
                         <div className="relative">
                             <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-gray-300" />
+                                <div className="w-full border-t border-white/10" />
                             </div>
                             <div className="relative flex justify-center text-sm">
-                                <span className="px-2 bg-transparent text-gray-500 rounded">
+                                <span className="px-4 bg-card text-gray-500">
                                     Or
                                 </span>
                             </div>
                         </div>
 
-                        <div className="mt-6 flex justify-center">
-                            <Link to="/login" className="flex items-center font-medium text-primary-600 hover:text-primary-500">
+                        <div className="mt-8 flex justify-center">
+                            <Link to="/login" className="flex items-center text-sm font-medium text-primary-400 hover:text-primary-300 transition-colors">
                                 <ArrowLeft className="w-4 h-4 mr-2" />
                                 Back to Sign In
                             </Link>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }
