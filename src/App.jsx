@@ -6,9 +6,9 @@ import Signup from './pages/Signup';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
-import Tasks from './pages/Tasks';
 import Planner from './pages/Planner';
 import CalendarPage from './pages/CalendarPage';
+import FocusSession from './pages/FocusSession';
 import { AuthProvider } from './context/AuthContext';
 import { TaskProvider } from './context/TaskContext';
 import { PlannerProvider } from './context/PlannerContext';
@@ -30,9 +30,9 @@ function App() {
               </RequireAuth>
             }>
               <Route index element={<Dashboard />} />
-              <Route path="tasks" element={<Tasks />} />
               <Route path="planner" element={<Planner />} />
               <Route path="calendar" element={<CalendarPage />} />
+              <Route path="focus" element={<FocusSession />} />
             </Route>
           </Routes>
         </PlannerProvider>

@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { usePlanner } from '../context/PlannerContext';
-import { useTasks } from '../context/TaskContext';
-import { format, addDays, subDays, parseISO, isBefore, startOfToday, parse } from 'date-fns';
-import { ChevronLeft, ChevronRight, Plus, X, Trash2, Edit2, CheckCircle2, Circle, XCircle, Calendar as CalendarIcon, Clock } from 'lucide-react';
+import { format, addDays, subDays, isBefore, startOfToday, parse } from 'date-fns';
+import { ChevronLeft, ChevronRight, Plus, Trash2, Edit2, CheckCircle2, Circle, XCircle, Calendar as CalendarIcon, Clock } from 'lucide-react';
 import SlotForm from '../components/SlotForm';
 import clsx from 'clsx';
 import Card from '../components/Card';
@@ -11,8 +10,7 @@ import Badge from '../components/Badge';
 export default function Planner() {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const formattedDate = format(selectedDate, 'yyyy-MM-dd');
-    const { slots, addSlot, updateSlot, deleteSlot, getSlotsForDate, toggleSlotCompletion } = usePlanner();
-    const { tasks } = useTasks();
+    const { addSlot, updateSlot, deleteSlot, getSlotsForDate, toggleSlotCompletion } = usePlanner();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingSlot, setEditingSlot] = useState(null);
@@ -36,22 +34,11 @@ export default function Planner() {
         setIsModalOpen(true);
     };
 
-    // Helper to get color based on linked task importance
-    const getSlotColor = (taskId) => {
-        if (!taskId) return 'bg-secondary border-white/5 text-gray-300';
-        const task = tasks.find(t => t.id === taskId);
-        if (!task) return 'bg-secondary border-white/5 text-gray-300';
-
-        if (task.status === 'Failed') return 'bg-error/10 border-error/20 text-error line-through';
-        if (task.status === 'Completed') return 'bg-success/10 border-success/20 text-gray-400 line-through opacity-70';
-
-        switch (task.importance) {
-            case 'Low': return 'bg-blue-500/10 border-blue-500/20 text-blue-200';
-            case 'Medium': return 'bg-yellow-500/10 border-yellow-500/20 text-yellow-200';
-            case 'High': return 'bg-orange-500/10 border-orange-500/20 text-orange-200';
-            case 'Critical': return 'bg-red-500/10 border-red-500/20 text-red-200';
-            default: return 'bg-secondary border-white/5 text-gray-300';
-        }
+    // Color based on slot status only (no task linking)
+    const getSlotColor = (slot) => {
+        if (slot.failed) return 'bg-error/10 border-error/20 text-error';
+        if (slot.completed) return 'bg-success/10 border-success/20 text-gray-400';
+        return 'bg-secondary border-white/5 text-gray-300';
     };
 
     return (
@@ -108,7 +95,7 @@ export default function Planner() {
                                 key={slot.id}
                                 className={clsx(
                                     "group flex items-center gap-4 p-4 rounded-xl border-l-4 transition-all hover:bg-white/5",
-                                    getSlotColor(slot.taskId),
+                                    getSlotColor(slot),
                                     slot.completed && "opacity-60"
                                 )}
                             >
@@ -125,13 +112,8 @@ export default function Planner() {
                                     <h4 className={clsx("font-semibold text-lg text-gray-100", slot.completed && "line-through text-gray-500")}>
                                         {slot.label}
                                     </h4>
-                                    {slot.taskId && (
-                                        <div className="flex items-center gap-2 mt-1">
-                                            <Badge type="info" className="text-[10px] py-0 px-1.5 h-5">Linked Task</Badge>
-                                            <span className="text-xs text-gray-500 truncate max-w-[200px]">
-                                                {tasks.find(t => t.id === slot.taskId)?.title}
-                                            </span>
-                                        </div>
+                                    {slot.failed && (
+                                        <Badge type="error" className="text-[10px] py-0 px-1.5 h-5 mt-1">Failed</Badge>
                                     )}
                                 </div>
 

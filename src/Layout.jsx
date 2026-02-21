@@ -2,12 +2,10 @@ import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import {
     LayoutDashboard,
-    CheckSquare,
     CalendarDays,
     Clock,
     LogOut,
-    Menu,
-    X
+    Zap,
 } from 'lucide-react';
 import { useState } from 'react';
 import clsx from 'clsx';
@@ -16,7 +14,6 @@ export default function Layout() {
     const { user, logout } = useAuth();
     const location = useLocation();
     const navigate = useNavigate();
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     const handleLogout = () => {
         logout();
@@ -25,9 +22,9 @@ export default function Layout() {
 
     const navItems = [
         { path: '/', label: 'Dashboard', icon: LayoutDashboard },
-        { path: '/tasks', label: 'Tasks', icon: CheckSquare },
         { path: '/planner', label: 'Planner', icon: Clock },
         { path: '/calendar', label: 'Calendar', icon: CalendarDays },
+        { path: '/focus', label: 'Focus', icon: Zap },
     ];
 
     return (
@@ -92,9 +89,17 @@ export default function Layout() {
                         <div className="w-8 h-8 rounded-lg bg-primary-600 flex items-center justify-center text-white font-bold text-lg shadow-inner">S</div>
                         <span className="font-bold text-gray-100">StudyFlow</span>
                     </div>
-                    {/* User Profile for Mobile */}
-                    <div className="w-8 h-8 rounded-full bg-gray-700 overflow-hidden">
-                        <img src={user?.avatar || "https://ui-avatars.com/api/?name=" + user?.name} alt={user?.name} className="w-full h-full object-cover" />
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-gray-700 overflow-hidden">
+                            <img src={user?.avatar || "https://ui-avatars.com/api/?name=" + user?.name} alt={user?.name} className="w-full h-full object-cover" />
+                        </div>
+                        <button
+                            onClick={handleLogout}
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 rounded-lg transition-colors border border-red-500/20"
+                        >
+                            <LogOut className="w-4 h-4" />
+                            <span>Logout</span>
+                        </button>
                     </div>
                 </header>
 
@@ -108,7 +113,7 @@ export default function Layout() {
                 </div>
 
                 {/* Mobile Bottom Navigation */}
-                <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-white/5 px-6 py-3 z-30 flex justify-between items-center safe-area-bottom">
+                <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-white/5 px-6 py-3 z-30 flex justify-around items-center safe-area-bottom">
                     {navItems.map((item) => {
                         const Icon = item.icon;
                         const isActive = location.pathname === item.path;
@@ -124,9 +129,6 @@ export default function Layout() {
                                 )}>
                                     <Icon className="w-6 h-6" />
                                 </div>
-                                {/* <span className={clsx("text-[10px] font-medium", isActive ? "text-primary-400" : "text-gray-500")}>
-                                    {item.label}
-                                </span> */}
                             </Link>
                         );
                     })}

@@ -1,10 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useTasks } from '../context/TaskContext';
-import { X } from 'lucide-react';
-import clsx from 'clsx';
+import { X, Clock } from 'lucide-react';
 
 const TimeSelect = ({ label, value, onChange }) => {
-    // Parse HH:mm to 12-hour format
     const parseTime = (timeStr) => {
         if (!timeStr) return { hour: '09', minute: '00', period: 'AM' };
         const [h, m] = timeStr.split(':').map(Number);
@@ -27,8 +24,6 @@ const TimeSelect = ({ label, value, onChange }) => {
     const handleChange = (field, val) => {
         const newState = { ...localState, [field]: val };
         setLocalState(newState);
-
-        // Convert back to HH:mm
         let h = parseInt(newState.hour);
         if (newState.period === 'PM' && h !== 12) h += 12;
         if (newState.period === 'AM' && h === 12) h = 0;
@@ -74,53 +69,28 @@ const TimeSelect = ({ label, value, onChange }) => {
     );
 };
 
-export default function SlotForm({ isOpen, onClose, onSubmit, initialData = null, selectedDate }) {
-    const { tasks } = useTasks();
+export default function SlotForm({ isOpen, onClose, onSubmit, initialData = null }) {
     const [formData, setFormData] = useState({
         startTime: '09:00',
         endTime: '10:00',
         label: '',
-        taskId: ''
     });
 
     useEffect(() => {
         if (initialData) {
-            setFormData(initialData);
+            setFormData({
+                startTime: initialData.startTime || '09:00',
+                endTime: initialData.endTime || '10:00',
+                label: initialData.label || '',
+            });
         } else {
             setFormData({
                 startTime: '09:00',
                 endTime: '10:00',
                 label: '',
-                taskId: ''
             });
         }
     }, [initialData, isOpen]);
-
-    // If a task is selected, auto-fill label if empty
-    useEffect(() => {
-        if (formData.taskId && !formData.label) {
-            const task = tasks.find(t => t.id === formData.taskId);
-            if (task) {
-                setFormData(prev => ({ ...prev, label: task.title }));
-            }
-        }
-    }, [formData.taskId, tasks]);
-
-    // Filter tasks for the selected date
-    const filteredTasks = tasks.filter(t => {
-        if (t.status === 'Completed' || t.status === 'Failed') return false;
-
-        // If selectedDate is provided, check if task matches
-        if (selectedDate && t.assignedDate) {
-            const taskDate = new Date(t.assignedDate).toISOString().split('T')[0];
-            return taskDate === selectedDate;
-        }
-
-        // If no date on task, maybe show it? Or only show dateless tasks if no date on planner?
-        // User requested: "only show the today's task in linked task"
-        // So strict filtering seems appropriate.
-        return false;
-    });
 
     if (!isOpen) return null;
 
@@ -142,70 +112,67 @@ export default function SlotForm({ isOpen, onClose, onSubmit, initialData = null
 
                 <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
-                <div className="inline-block align-bottom bg-card rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-white/10">
+                <div className="inline-block align-bottom bg-card rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full border border-white/10">
                     <div className="px-6 pt-6 pb-6">
                         <div className="flex justify-between items-center mb-6">
-                            <h3 className="text-xl font-bold text-gray-100">
-                                {initialData ? 'Edit Time Slot' : 'Add Time Slot'}
-                            </h3>
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-primary-500/10 rounded-lg">
+                                    <Clock className="w-5 h-5 text-primary-400" />
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-100">
+                                    {initialData ? 'Edit Time Slot' : 'New Time Slot'}
+                                </h3>
+                            </div>
                             <button onClick={onClose} className="p-1 hover:bg-white/5 rounded-lg transition-colors text-gray-400 hover:text-gray-200">
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-5">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <TimeSelect
-                                    label="Start Time"
-                                    value={formData.startTime}
-                                    onChange={(val) => setFormData(prev => ({ ...prev, startTime: val }))}
-                                />
-                                <TimeSelect
-                                    label="End Time"
-                                    value={formData.endTime}
-                                    onChange={(val) => setFormData(prev => ({ ...prev, endTime: val }))}
-                                />
-                            </div>
-
+                            {/* Work Name */}
                             <div>
-                                <label className={labelClasses}>Link a Task (Optional)</label>
-                                <select
-                                    className={inputClasses}
-                                    value={formData.taskId}
-                                    onChange={(e) => setFormData({ ...formData, taskId: e.target.value })}
-                                >
-                                    <option value="">-- None --</option>
-                                    {filteredTasks.map(task => (
-                                        <option key={task._id || task.id} value={task._id || task.id}>{task.title}</option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className={labelClasses}>Label / Activity Name</label>
+                                <label className={labelClasses}>Work Name</label>
                                 <input
                                     type="text"
                                     required
-                                    placeholder="e.g. Morning Study"
+                                    placeholder="e.g. Morning Study, Deep Work, Exercise..."
                                     className={inputClasses}
                                     value={formData.label}
                                     onChange={(e) => setFormData({ ...formData, label: e.target.value })}
+                                    autoFocus
                                 />
+                            </div>
+
+                            {/* Time Slot */}
+                            <div>
+                                <label className={labelClasses}>Time Slot</label>
+                                <div className="grid grid-cols-2 gap-4 mt-1">
+                                    <TimeSelect
+                                        label="Start"
+                                        value={formData.startTime}
+                                        onChange={(val) => setFormData(prev => ({ ...prev, startTime: val }))}
+                                    />
+                                    <TimeSelect
+                                        label="End"
+                                        value={formData.endTime}
+                                        onChange={(val) => setFormData(prev => ({ ...prev, endTime: val }))}
+                                    />
+                                </div>
                             </div>
 
                             <div className="pt-4 flex gap-3">
                                 <button
                                     type="button"
-                                    className="flex-1 px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-gray-300 font-medium hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                                    className="flex-1 px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-gray-300 font-medium hover:bg-white/10 transition-colors"
                                     onClick={onClose}
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="flex-1 px-4 py-2.5 bg-primary-600 border border-transparent rounded-xl text-white font-bold hover:bg-primary-500 transition-colors shadow-lg shadow-primary-900/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                                    className="flex-1 px-4 py-2.5 bg-primary-600 border border-transparent rounded-xl text-white font-bold hover:bg-primary-500 transition-colors shadow-lg shadow-primary-900/20"
                                 >
-                                    Save Slot
+                                    {initialData ? 'Save Changes' : 'Add Slot'}
                                 </button>
                             </div>
                         </form>
