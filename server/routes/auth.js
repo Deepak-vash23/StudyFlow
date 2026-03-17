@@ -6,12 +6,13 @@ import nodemailer from 'nodemailer';
 const router = express.Router();
 
 const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
     auth: {
         user: process.env.EMAIL,
         pass: process.env.EMAIL_PASSWORD
-    },
-    family: 4 // Force IPv4 to avoid ENETUNREACH on some cloud providers
+    }
 });
 
 // Register new user
