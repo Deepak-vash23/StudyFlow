@@ -38,7 +38,7 @@ export default function ForgotPassword() {
                 throw new Error(data.message || 'Something went wrong');
             }
 
-            setMessage('Password reset link sent to your email.');
+            setMessage('Password reset link sent to your email. Check Spam for emails');
         } catch (err) {
             setError(err.message);
         } finally {
