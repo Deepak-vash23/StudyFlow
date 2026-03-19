@@ -23,7 +23,16 @@ export default function ForgotPassword() {
                 body: JSON.stringify({ email }),
             });
 
-            const data = await response.json();
+            const contentType = response.headers.get("content-type");
+            let data = {};
+            
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                data = await response.json();
+            } else {
+                // Render returned an HTML error page (like 504 Gateway Timeout or 502 Bad Gateway)
+                const text = await response.text();
+                throw new Error('Server connection timed out or returned an invalid response. Please try again.');
+            }
 
             if (!response.ok) {
                 throw new Error(data.message || 'Something went wrong');

@@ -7,8 +7,8 @@ const router = express.Router();
 
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
+    port: 587,
+    secure: false, // Use STARTTLS for port 587
     auth: {
         user: process.env.EMAIL,
         pass: process.env.EMAIL_PASSWORD
@@ -140,15 +140,9 @@ router.post("/forgot-password", async (req, res) => {
             text: `You requested a password reset. Please click the following link to reset your password: \n\n ${resetURL} \n\n If you did not request this, please ignore this email.`
         };
 
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.log("Email error:", error);
-                return res.status(500).json({ message: "Error sending email" });
-            } else {
-                console.log("Email sent: " + info.response);
-                return res.json({ message: "Reset link sent to email" });
-            }
-        });
+        const info = await transporter.sendMail(mailOptions);
+        console.log("Email sent: " + info.response);
+        return res.json({ message: "Reset link sent to email" });
 
     } catch (error) {
         res.status(500).json({ message: error.message });
