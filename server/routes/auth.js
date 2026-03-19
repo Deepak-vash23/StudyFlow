@@ -1,14 +1,8 @@
 import express from 'express';
 import User from '../models/User.js';
 import crypto from 'crypto';
-import Mailjet from 'node-mailjet';
 
 const router = express.Router();
-
-const mailjet = Mailjet.apiConnect(
-    process.env.MAILJET_API_KEY,
-    process.env.MAILJET_SECRET_KEY
-);
 
 // Register new user
 router.post('/register', async (req, res) => {
@@ -128,29 +122,44 @@ router.post("/forgot-password", async (req, res) => {
 
         console.log("Reset Link:", resetURL);
 
-        const request = mailjet
-            .post("send", { 'version': 'v3.1' })
-            .request({
-                "Messages": [
-                    {
-                        "From": {
-                            "Email": process.env.EMAIL,
-                            "Name": "StudyFlow Support"
-                        },
-                        "To": [
-                            {
-                                "Email": user.email,
-                                "Name": user.name
-                            }
-                        ],
-                        "Subject": "Password Reset Link",
-                        "TextPart": `You requested a password reset. Please click the following link to reset your password: \n\n ${resetURL} \n\n If you did not request this, please ignore this email.`
-                    }
-                ]
-            });
+        if (!process.env.MAILJET_API_KEY || !process.env.MAILJET_SECRET_KEY || !process.env.EMAIL) {
+            console.error("Missing Mailjet configuration in .env");
+            return res.status(500).json({ message: "Server email configuration is missing." });
+        }
 
-        await request;
-        console.log("Email sent via Mailjet successfully");
+        const mailjetPayload = {
+            "Messages": [
+                {
+                    "From": { "Email": process.env.EMAIL, "Name": "StudyFlow Support" },
+                    "To": [{ "Email": user.email, "Name": user.name }],
+                    "Subject": "Password Reset Link",
+                    "TextPart": `You requested a password reset. Please click the following link to reset your password: \n\n ${resetURL} \n\n If you did not request this, please ignore this email.`,
+                    "HTMLPart": `<h3>Password Reset</h3><p>You requested a password reset. Please click the link to reset your password: <br><br> <a href="${resetURL}">Reset Password</a> <br><br> If you did not request this, please ignore this email.</p>`
+                    // If you want to use a Mailjet Template later, you can remove Subject/TextPart/HTMLPart and use:
+                    // "TemplateID": 123456,
+                    // "TemplateLanguage": true,
+                    // "Variables": { "resetLink": resetURL, "firstname": user.name }
+                }
+            ]
+        };
+
+        const response = await fetch("https://api.mailjet.com/v3.1/send", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Basic " + Buffer.from(`${process.env.MAILJET_API_KEY}:${process.env.MAILJET_SECRET_KEY}`).toString('base64')
+            },
+            body: JSON.stringify(mailjetPayload)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            console.error("Mailjet API Error:", JSON.stringify(data, null, 2));
+            return res.status(500).json({ message: "Failed to send reset email via Mailjet API." });
+        }
+
+        console.log("Email sent successfully via Mailjet fetch API");
         return res.json({ message: "Reset link sent to email" });
 
     } catch (error) {
