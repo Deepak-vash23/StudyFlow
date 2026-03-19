@@ -1,19 +1,14 @@
 import express from 'express';
 import User from '../models/User.js';
 import crypto from 'crypto';
-import nodemailer from 'nodemailer';
+import Mailjet from 'node-mailjet';
 
 const router = express.Router();
 
-const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false, // Use STARTTLS for port 587
-    auth: {
-        user: process.env.EMAIL,
-        pass: process.env.EMAIL_PASSWORD
-    }
-});
+const mailjet = Mailjet.apiConnect(
+    process.env.MAILJET_API_KEY,
+    process.env.MAILJET_SECRET_KEY
+);
 
 // Register new user
 router.post('/register', async (req, res) => {
@@ -133,15 +128,29 @@ router.post("/forgot-password", async (req, res) => {
 
         console.log("Reset Link:", resetURL);
 
-        const mailOptions = {
-            from: process.env.EMAIL,
-            to: user.email,
-            subject: "Password Reset Link",
-            text: `You requested a password reset. Please click the following link to reset your password: \n\n ${resetURL} \n\n If you did not request this, please ignore this email.`
-        };
+        const request = mailjet
+            .post("send", { 'version': 'v3.1' })
+            .request({
+                "Messages": [
+                    {
+                        "From": {
+                            "Email": process.env.EMAIL,
+                            "Name": "StudyFlow Support"
+                        },
+                        "To": [
+                            {
+                                "Email": user.email,
+                                "Name": user.name
+                            }
+                        ],
+                        "Subject": "Password Reset Link",
+                        "TextPart": `You requested a password reset. Please click the following link to reset your password: \n\n ${resetURL} \n\n If you did not request this, please ignore this email.`
+                    }
+                ]
+            });
 
-        const info = await transporter.sendMail(mailOptions);
-        console.log("Email sent: " + info.response);
+        await request;
+        console.log("Email sent via Mailjet successfully");
         return res.json({ message: "Reset link sent to email" });
 
     } catch (error) {
