@@ -122,7 +122,7 @@ router.post("/forgot-password", async (req, res) => {
 
         console.log("Reset Link:", resetURL);
 
-        if (!process.env.MAILJET_API_KEY || !process.env.MAILJET_SECRET_KEY || !process.env.EMAIL) {
+        if (!process.env.MAILJET_API || !process.env.MAILJET_SECRET || !process.env.EMAIL) {
             console.error("Missing Mailjet configuration in .env");
             return res.status(500).json({ message: "Server email configuration is missing." });
         }
@@ -147,7 +147,7 @@ router.post("/forgot-password", async (req, res) => {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": "Basic " + Buffer.from(`${process.env.MAILJET_API_KEY}:${process.env.MAILJET_SECRET_KEY}`).toString('base64')
+                "Authorization": "Basic " + Buffer.from(`${process.env.MAILJET_API}:${process.env.MAILJET_SECRET}`).toString('base64')
             },
             body: JSON.stringify(mailjetPayload)
         });
