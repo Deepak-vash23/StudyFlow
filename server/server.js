@@ -96,6 +96,11 @@ if (process.env.NODE_ENV === 'production') {
     });
 }
 
+// Start Server
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on port ${PORT}`);
+});
+
 // Database Connection
 mongoose.connect(process.env.MONGO_URI)
     .then(() => {
@@ -103,11 +108,7 @@ mongoose.connect(process.env.MONGO_URI)
         // Start Scheduler after DB connection
         startFailureCheckJob();
         console.log('Failure Check Scheduler Started');
-
-        app.listen(PORT, () => {
-            console.log(`Server running on port ${PORT}`);
-        });
     })
     .catch(err => {
-        console.error('MongoDB Connection Error:', err);
+        console.error('MongoDB Connection Error. Please ensure Network Access is set to 0.0.0.0/0 in MongoDB Atlas:', err);
     });
