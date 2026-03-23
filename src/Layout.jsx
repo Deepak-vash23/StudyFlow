@@ -21,7 +21,7 @@ export default function Layout() {
     };
 
     const navItems = [
-        { path: '/', label: 'Dashboard', icon: LayoutDashboard },
+        { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
         { path: '/planner', label: 'Planner', icon: Clock },
         { path: '/calendar', label: 'Calendar', icon: CalendarDays },
         { path: '/focus', label: 'Focus', icon: Zap },

@@ -7,6 +7,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
 import Planner from './pages/Planner';
+import Landing from './pages/Landing';
 import CalendarPage from './pages/CalendarPage';
 import FocusSession from './pages/FocusSession';
 import { AuthProvider } from './context/AuthContext';
@@ -19,20 +20,21 @@ function App() {
       <TaskProvider>
         <PlannerProvider>
           <Routes>
+            <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
 
-            <Route path="/" element={
+            <Route element={
               <RequireAuth>
                 <Layout />
               </RequireAuth>
             }>
-              <Route index element={<Dashboard />} />
-              <Route path="planner" element={<Planner />} />
-              <Route path="calendar" element={<CalendarPage />} />
-              <Route path="focus" element={<FocusSession />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/planner" element={<Planner />} />
+              <Route path="/calendar" element={<CalendarPage />} />
+              <Route path="/focus" element={<FocusSession />} />
             </Route>
           </Routes>
         </PlannerProvider>

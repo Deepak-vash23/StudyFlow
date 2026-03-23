@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>StudyFlow – Task Management &amp; Focus App for Students</title>
+<meta content="StudyFlow helps students manage tasks, stay focused, and improve productivity with smart scheduling and focus sessions." name="description"/>
+<meta content="student productivity app, task management for students, focus timer app, study planner, time management for students" name="keywords"/>
+<!-- Scripts & Fonts -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-container": "#4f46e5",
+              "surface": "#0a0a1f",
+              "surface-container-high": "#161635",
+              "surface-variant": "#1c1c44",
+              "on-surface-variant": "#a5a5d9",
+              "on-tertiary-fixed-variant": "#703700",
+              "secondary-fixed": "#e1e0ff",
+              "error": "#ffb4ab",
+              "outline": "#4b4b7c",
+              "on-secondary-fixed": "#13144a",
+              "on-tertiary-fixed": "#301400",
+              "outline-variant": "#2d2d5a",
+              "surface-container-low": "#0d0d29",
+              "error-container": "#93000a",
+              "inverse-on-surface": "#2a3043",
+              "tertiary": "#fbbf24", /* Golden accent */
+              "secondary-fixed-dim": "#c0c1ff",
+              "inverse-primary": "#494bd6",
+              "primary-fixed": "#e1e0ff",
+              "on-tertiary": "#4f2500",
+              "on-primary": "#ffffff",
+              "secondary": "#a78bfa", /* Royal Purple */
+              "on-primary-fixed-variant": "#2f2ebe",
+              "surface-container": "#111130",
+              "on-error-container": "#ffdad6",
+              "surface-dim": "#0a0a1f",
+              "on-primary-container": "#ffffff",
+              "tertiary-fixed-dim": "#ffb783",
+              "surface-container-highest": "#1c1c44",
+              "surface-bright": "#1e1e4a",
+              "background": "#050514",
+              "on-primary-fixed": "#07006c",
+              "surface-tint": "#c0c1ff",
+              "inverse-surface": "#dce1fb",
+              "primary": "#6366f1",
+              "tertiary-fixed": "#ffdcc5",
+              "on-background": "#e2e8f0",
+              "on-secondary-container": "#e0e7ff",
+              "on-secondary-fixed-variant": "#404178",
+              "secondary-container": "#312e81",
+              "surface-container-lowest": "#030310",
+              "on-secondary": "#ffffff",
+              "on-tertiary-container": "#452000",
+              "primary-fixed-dim": "#c0c1ff",
+              "on-surface": "#f1f5f9",
+              "tertiary-container": "#d97721",
+              "on-error": "#690005"
+            },
+            fontFamily: {
+              "headline": ["Playfair Display", "serif"],
+              "body": ["Inter", "sans-serif"],
+              "label": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "0.75rem", "xl": "1rem", "2xl": "1.5rem", "3xl": "2rem", "full": "9999px"},
+            animation: {
+              'float': 'float 6s ease-in-out infinite',
+            },
+            keyframes: {
+              float: {
+                '0%, 100%': { transform: 'translateY(0px) rotate(-1deg)' },
+                '50%': { transform: 'translateY(-20px) rotate(1deg)' },
+              }
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            background-color: #050514;
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(167, 139, 250, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(251, 191, 36, 0.03) 0%, transparent 50%);
+            color: #f1f5f9;
+            font-family: 'Inter', sans-serif;
+        }
+        .royal-glow {
+            box-shadow: 0 0 50px -12px rgba(99, 102, 241, 0.3);
+        }
+        .glass-panel {
+            background: rgba(22, 22, 53, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased selection:bg-primary/30 selection:text-primary">
+<!-- TopNavBar -->
+<nav class="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-5xl z-50 glass-panel rounded-full px-8 py-3 shadow-[0px_20px_40px_rgba(0,0,0,0.4)] transition-all duration-300">
+<div class="flex justify-between items-center max-w-7xl mx-auto">
+<div class="text-2xl font-black tracking-tighter text-on-surface font-headline">
+            StudyFlow
+        </div>
+<div class="hidden md:flex items-center gap-10 font-body font-medium text-sm tracking-wide">
+<a class="text-primary font-bold border-b-2 border-primary pb-1 transition-all duration-300" href="#">Home</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors" href="#about">About</a>
+</div>
+<button class="bg-gradient-to-br from-primary to-secondary text-white px-6 py-2.5 rounded-full font-semibold text-sm hover:shadow-[0_0_20px_rgba(99,102,241,0.4)] active:scale-95 transition-all duration-300">
+            Get Started
+        </button>
+</div>
+</nav>
+<main class="pt-32">
+<!-- Hero Section -->
+<section class="relative px-8 py-20 lg:py-40 max-w-7xl mx-auto overflow-hidden">
+<div class="grid lg:grid-cols-2 gap-20 items-center">
+<div class="z-10">
+<h1 class="text-6xl lg:text-8xl font-black tracking-tight text-on-surface mb-8 leading-[1.1] font-headline">
+                The Master’s <br/><span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-tertiary">Focus Tool</span>
+</h1>
+<p class="text-xl text-on-surface-variant mb-12 max-w-xl leading-relaxed font-light">
+                Elevate your academic performance with StudyFlow. A premium digital sanctuary meticulously crafted for deep work and intellectual mastery.
+            </p>
+<div class="flex flex-wrap gap-6">
+<button class="bg-gradient-to-br from-primary to-secondary text-white px-10 py-5 rounded-full font-bold text-lg hover:shadow-[0_0_40px_rgba(99,102,241,0.5)] active:scale-95 transition-all">
+                    Start Your Journey
+                </button>
+<button class="bg-surface-container-high border border-outline-variant text-on-surface px-10 py-5 rounded-full font-bold text-lg hover:bg-surface-bright transition-all">
+                    The Philosophy
+                </button>
+</div>
+</div>
+<div class="relative group perspective-1000">
+<div class="absolute -inset-10 bg-primary/10 blur-[100px] rounded-full group-hover:bg-primary/20 transition-all duration-1000"></div>
+<div class="relative animate-float">
+<img alt="StudyFlow Interface" class="w-full rounded-[2.5rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.7)] border border-white/10 glass-panel p-2 transform rotate-2 hover:rotate-0 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida/ADBb0ujcKnjeTtlo_IfUtV4_XcXfwNA3zf4oAIoRmTWKHyPIvHY50TEUTfOLjojWTi2TrqOXzASBi8iVudZD3St-zPdVVm8izI9JOR0T9cUt1gNnpV44C1DMliYs74ln42hw1AUJtWXZXQ9VztH0ozA8prS8-d3mTrOE7QvD9tqTgCAhB5LEvPDOBOqM17J9HewVeWAmQHvYclIzEsUBu0TosGUzKgamFazO4CSsM26o_BA3ULTQbWbnZomBSCYaAAsUylF6AxhOoSa_GQ"/>
+<div class="absolute -top-4 -right-4 w-24 h-24 bg-tertiary/20 blur-2xl rounded-full"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Features Section -->
+<section class="px-8 py-32 bg-surface-container-lowest border-y border-outline-variant/30">
+<div class="max-w-7xl mx-auto">
+<div class="mb-24 text-center">
+<h2 class="text-4xl lg:text-6xl font-black tracking-tight mb-6 font-headline">The Royal Workflow</h2>
+<p class="text-on-surface-variant text-xl font-light">Elegance meets efficiency in every feature.</p>
+</div>
+<div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+<!-- Feature 1 -->
+<div class="p-10 bg-surface border border-outline-variant/40 rounded-[2.5rem] hover:border-primary/50 transition-all group royal-glow">
+<div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-10 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl">calendar_today</span>
+</div>
+<h3 class="text-2xl font-bold mb-4 font-headline text-on-surface">Task Planning</h3>
+<p class="text-on-surface-variant leading-relaxed">Curate your schedule with sovereign precision and priority tagging.</p>
+</div>
+<!-- Feature 2 -->
+<div class="p-10 bg-surface border border-outline-variant/40 rounded-[2.5rem] hover:border-tertiary/50 transition-all group royal-glow">
+<div class="w-16 h-16 bg-tertiary/10 rounded-2xl flex items-center justify-center text-tertiary mb-10 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl">timer</span>
+</div>
+<h3 class="text-2xl font-bold mb-4 font-headline text-on-surface">Focus Timer</h3>
+<p class="text-on-surface-variant leading-relaxed">Immerse yourself in work with our distractions-free interval master.</p>
+</div>
+<!-- Feature 3 -->
+<div class="p-10 bg-surface border border-outline-variant/40 rounded-[2.5rem] hover:border-secondary/50 transition-all group royal-glow">
+<div class="w-16 h-16 bg-secondary/10 rounded-2xl flex items-center justify-center text-secondary mb-10 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl">insights</span>
+</div>
+<h3 class="text-2xl font-bold mb-4 font-headline text-on-surface">Analytics</h3>
+<p class="text-on-surface-variant leading-relaxed">Visualize your intellectual growth with deep-data productivity reports.</p>
+</div>
+<!-- Feature 4 -->
+<div class="p-10 bg-surface border border-outline-variant/40 rounded-[2.5rem] hover:border-on-surface-variant transition-all group royal-glow">
+<div class="w-16 h-16 bg-outline/10 rounded-2xl flex items-center justify-center text-on-surface-variant mb-10 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl">cloud_off</span>
+</div>
+<h3 class="text-2xl font-bold mb-4 font-headline text-on-surface">Offline Sanctuary</h3>
+<p class="text-on-surface-variant leading-relaxed">Your focus shouldn't depend on a connection. Work anywhere, anytime.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- About Section -->
+<section class="px-8 py-32 max-w-7xl mx-auto" id="about">
+<div class="grid lg:grid-cols-2 gap-24 items-center">
+<div class="order-2 lg:order-1 relative">
+<div class="absolute -inset-4 bg-gradient-to-tr from-primary to-secondary opacity-20 blur-3xl rounded-[3rem]"></div>
+<img alt="Student studying in a focused environment" class="relative rounded-[3rem] shadow-[0_50px_100px_rgba(0,0,0,0.5)] filter grayscale brightness-75 hover:grayscale-0 transition-all duration-1000 border border-white/5" data-alt="A focused student studying in a modern minimalist room" src="https://lh3.googleusercontent.com/aida-public/AB6AXuApFOUYvCoYz8OWEz-okSWvXd7NS9up-D6oy4fV53Y15mOZEeBmsBiulNEP1hxprTGimK5f0MrAPBfwsd74_spY7Onwy9JfzQIodo7v5WCRhpuLSkyiynOoVZq0kbNAXvU8vZHhyQfVbrdG1G4iZ1jh0yJLoUllV6xzTHMQ14pp3lBVQB9iJg5Q4hm1IoMYtHCS1uJKD5GaMRxjTk34c3y6woGUuY6MHZeWdVgvHQN4PNQzGVGU-bLR3dQyL5qmNf9sf6ZDVNvD_g8"/>
+<div class="absolute -bottom-10 -right-10 bg-surface-container-high border border-primary/30 p-8 rounded-[2rem] shadow-2xl hidden md:block backdrop-blur-xl">
+<p class="text-primary font-black text-4xl font-headline">98%</p>
+<p class="text-on-surface-variant text-[10px] uppercase tracking-[0.2em] font-bold mt-1">Focus Rate Improvement</p>
+</div>
+</div>
+<div class="order-1 lg:order-2">
+<h2 class="text-5xl font-black mb-10 leading-tight font-headline">The StudyFlow <br/>Manifesto</h2>
+<p class="text-on-surface-variant text-xl leading-relaxed mb-8 font-light">
+                StudyFlow was born from the realization that modern students are besieged by tools that demand more attention than the work itself.
+            </p>
+<p class="text-on-surface-variant text-xl leading-relaxed mb-12 font-light">
+                We believe in the nobility of deep work. Our platform is designed as an invisible companion—providing structure without noise, and power without complexity.
+            </p>
+<div class="flex items-center gap-8">
+<div class="h-px flex-1 bg-gradient-to-r from-transparent to-outline-variant"></div>
+<span class="text-tertiary font-headline text-xl italic tracking-widest">Noble Focus.</span>
+<div class="h-px flex-1 bg-gradient-to-l from-transparent to-outline-variant"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- How It Works Section (Bento Style) -->
+<section class="px-8 py-32 bg-surface-container-low border-t border-outline-variant/20">
+<div class="max-w-7xl mx-auto">
+<h2 class="text-5xl font-black text-center mb-24 font-headline">The Path to Sovereignty</h2>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+<!-- Step 1 -->
+<div class="bg-surface p-12 rounded-[2.5rem] border border-outline-variant/30 flex flex-col justify-between min-h-[350px] royal-glow hover:translate-y-[-8px] transition-transform">
+<span class="text-7xl font-black text-outline-variant/10 font-headline">I</span>
+<div>
+<h3 class="text-2xl font-bold mb-4 font-headline">Intellectual Capture</h3>
+<p class="text-on-surface-variant">Release the burden of memory. Record every objective with ease.</p>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="bg-surface-container-high p-12 rounded-[2.5rem] border border-primary/20 flex flex-col justify-between min-h-[350px] shadow-2xl hover:translate-y-[-8px] transition-transform">
+<span class="text-7xl font-black text-primary/10 font-headline">II</span>
+<div>
+<h3 class="text-2xl font-bold mb-4 font-headline">Strategic Alignment</h3>
+<p class="text-on-surface-variant">Map your day. Command your hours before they command you.</p>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="bg-surface p-12 rounded-[2.5rem] border border-outline-variant/30 flex flex-col justify-between min-h-[350px] royal-glow hover:translate-y-[-8px] transition-transform">
+<span class="text-7xl font-black text-outline-variant/10 font-headline">III</span>
+<div>
+<h3 class="text-2xl font-bold mb-4 font-headline">Deep Engagement</h3>
+<p class="text-on-surface-variant">Enter the state of Flow. Total immersion until the work is complete.</p>
+</div>
+</div>
+<!-- Step 4 -->
+<div class="bg-surface p-12 rounded-[2.5rem] border border-outline-variant/30 flex flex-col justify-between min-h-[350px] royal-glow hover:translate-y-[-8px] transition-transform">
+<span class="text-7xl font-black text-outline-variant/10 font-headline">IV</span>
+<div>
+<h3 class="text-2xl font-bold mb-4 font-headline">Retrospect</h3>
+<p class="text-on-surface-variant">Reflect on your progress and refine your pursuit of excellence.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="px-8 py-40">
+<div class="max-w-5xl mx-auto bg-gradient-to-br from-indigo-900/40 to-slate-900/40 border border-white/5 rounded-[4rem] p-16 lg:p-24 text-center relative overflow-hidden shadow-[0_100px_100px_-50px_rgba(0,0,0,0.8)]">
+<div class="absolute top-0 right-0 w-96 h-96 bg-primary/20 blur-[120px] rounded-full -mr-48 -mt-48"></div>
+<div class="absolute bottom-0 left-0 w-96 h-96 bg-secondary/10 blur-[120px] rounded-full -ml-48 -mb-48"></div>
+<h2 class="text-4xl lg:text-7xl font-black mb-12 leading-tight font-headline">Reclaim your attention. <br/>Master your craft.</h2>
+<button class="bg-gradient-to-br from-primary via-secondary to-primary text-white px-12 py-6 rounded-full font-bold text-2xl hover:shadow-[0_0_60px_rgba(99,102,241,0.6)] transition-all transform hover:scale-105 active:scale-95">
+            Ascend with StudyFlow
+        </button>
+</div>
+</section>
+<!-- Contact Section -->
+<section class="px-8 py-32 max-w-6xl mx-auto" id="contact">
+<div class="grid lg:grid-cols-2 gap-24">
+<div>
+<h2 class="text-5xl font-black mb-8 font-headline">Inquiries</h2>
+<p class="text-on-surface-variant text-xl mb-12 leading-relaxed font-light">
+                Our team of success specialists is ready to assist you in architecting your ultimate study environment.
+            </p>
+<div class="space-y-8">
+<div class="flex items-center gap-6">
+<div class="w-14 h-14 bg-surface-container-highest rounded-2xl flex items-center justify-center text-primary royal-glow">
+<span class="material-symbols-outlined text-2xl">mail</span>
+</div>
+<span class="text-xl font-medium text-on-surface">concierge@studyflow.app</span>
+</div>
+</div>
+</div>
+<form class="space-y-8 glass-panel rounded-[3rem] p-12 border border-white/10 shadow-2xl">
+<div class="space-y-2">
+<label class="block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-2">Name</label>
+<input class="w-full bg-surface-container-highest/50 border border-white/5 rounded-2xl px-6 py-4 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Your full name" type="text"/>
+</div>
+<div class="space-y-2">
+<label class="block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-2">Email</label>
+<input class="w-full bg-surface-container-highest/50 border border-white/5 rounded-2xl px-6 py-4 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="your@institution.edu" type="email"/>
+</div>
+<div class="space-y-2">
+<label class="block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-2">Message</label>
+<textarea class="w-full bg-surface-container-highest/50 border border-white/5 rounded-2xl px-6 py-4 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Describe your vision..." rows="4"></textarea>
+</div>
+<button class="w-full bg-gradient-to-r from-primary to-secondary text-white py-5 rounded-2xl font-bold text-lg hover:shadow-lg active:scale-[0.98] transition-all" type="submit">Send Inquiry</button>
+</form>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest border-t border-outline-variant/30 w-full py-20 px-8">
+<div class="flex flex-col md:flex-row justify-between items-center gap-12 max-w-7xl mx-auto">
+<div class="text-3xl font-black text-on-surface font-headline">StudyFlow</div>
+<div class="flex flex-wrap justify-center gap-12 font-body text-sm font-medium text-on-surface-variant">
+<a class="hover:text-primary transition-colors" href="#">Home</a>
+<a class="hover:text-primary transition-colors" href="#about">About</a>
+<a class="hover:text-primary transition-colors" href="#">Privacy</a>
+<a class="hover:text-primary transition-colors" href="#">Terms</a>
+<a class="hover:text-primary transition-colors" href="#">Twitter</a>
+</div>
+<div class="text-on-surface-variant text-xs tracking-widest text-center md:text-right font-light">
+            © 2024 STUDYFLOW. THE DISTRACTIONLESS SANCTUARY.
+        </div>
+</div>
+</footer>
+</body></html>
