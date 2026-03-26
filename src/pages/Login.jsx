@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { BookOpen, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { BookOpen, AlertCircle, Eye, EyeOff, Home } from 'lucide-react';
 
 export default function Login() {
     const [email, setEmail] = useState('');
@@ -38,14 +38,21 @@ export default function Login() {
                 <div className="absolute top-[40%] -right-[10%] w-[40%] h-[40%] bg-blue-900/10 rounded-full blur-[100px]" />
             </div>
 
-            <div className="relative z-10 w-full max-w-[400px]"> {/* Adjusted width to match reference roughly */}
+            <div className="relative z-10 w-full max-w-[400px]">
                 <div
-                    className="bg-card py-10 px-10 rounded-[50px] text-center"
+                    className="bg-card py-10 px-10 rounded-[50px] text-center relative"
                     style={{
                         boxShadow: '8px 8px 16px rgba(0, 0, 0, 0.6), -8px -8px 16px rgba(255, 255, 255, 0.05)',
                         border: '1px solid rgba(255, 255, 255, 0.05)'
                     }}
                 >
+                    <Link to="/" className="absolute top-6 left-6 w-10 h-10 rounded-full flex items-center justify-center text-gray-400 hover:text-primary-400 hover:-translate-y-0.5 transition-all"
+                        style={{
+                            background: 'var(--bg-card)',
+                            boxShadow: '4px 4px 8px rgba(0, 0, 0, 0.5), -4px -4px 8px rgba(255, 255, 255, 0.04)'
+                        }}>
+                        <Home className="w-5 h-5" />
+                    </Link>
                     <div className="flex justify-center mb-6">
                         {/* Icon - keeping existing logic but styling to match theme */}
                         <div className="w-16 h-16 rounded-full flex items-center justify-center text-primary-400"
