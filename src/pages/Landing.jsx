@@ -44,7 +44,7 @@ export default function Landing() {
 </nav>
 <main className="pt-32">
 {/* Hero Section */}
-<section className="relative px-8 py-20 lg:py-40 max-w-7xl mx-auto overflow-hidden">
+<section className="relative px-8 py-20 lg:py-40 max-w-7xl mx-auto">
 <div className="grid lg:grid-cols-2 gap-20 items-center">
 <div className="z-10">
 <h1 className="text-6xl lg:text-8xl font-black tracking-tight text-l-on-surface mb-8 leading-[1.1] font-headline">
@@ -63,8 +63,8 @@ export default function Landing() {
 <div className="relative group perspective-1000">
 <div className="absolute -inset-10 bg-l-primary/10 blur-[100px] rounded-full group-hover:bg-l-primary/20 transition-all duration-1000"></div>
 <div className="relative animate-float">
-<img alt="StudyFlow Interface" className="w-full rounded-[2.5rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.7)] border border-white/10 glass-panel p-2 transform rotate-2 hover:rotate-0 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida/ADBb0ujcKnjeTtlo_IfUtV4_XcXfwNA3zf4oAIoRmTWKHyPIvHY50TEUTfOLjojWTi2TrqOXzASBi8iVudZD3St-zPdVVm8izI9JOR0T9cUt1gNnpV44C1DMliYs74ln42hw1AUJtWXZXQ9VztH0ozA8prS8-d3mTrOE7QvD9tqTgCAhB5LEvPDOBOqM17J9HewVeWAmQHvYclIzEsUBu0TosGUzKgamFazO4CSsM26o_BA3ULTQbWbnZomBSCYaAAsUylF6AxhOoSa_GQ"/>
-<div className="absolute -top-4 -right-4 w-24 h-24 bg-l-tertiary/20 blur-2xl rounded-full"></div>
+<img alt="StudyFlow Interface" className="w-full rounded-[2.5rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.7)] transform rotate-2 hover:rotate-0 transition-transform duration-700" src="/hero-interface.png"/>
+
 </div>
 </div>
 </div>
