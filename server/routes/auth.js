@@ -130,7 +130,7 @@ router.post("/forgot-password", async (req, res) => {
         const mailjetPayload = {
             "Messages": [
                 {
-                    "From": { "Email": process.env.EMAIL, "Name": "StudyFlow Support" },
+                    "From": { "Email": process.env.EMAIL, "Name": "Flowsy Support" },
                     "To": [{ "Email": user.email, "Name": user.name }],
                     "Subject": "Password Reset Link",
                     "TextPart": `You requested a password reset. Please click the following link to reset your password: \n\n ${resetURL} \n\n If you did not request this, please ignore this email.`,
