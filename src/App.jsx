@@ -18,7 +18,7 @@ import { TaskProvider } from './context/TaskContext';
 import { PlannerProvider } from './context/PlannerContext';
 
 function App() {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(window.location.pathname === '/');
 
   return (
     <AuthProvider>

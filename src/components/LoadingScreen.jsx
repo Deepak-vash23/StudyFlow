@@ -1,16 +1,13 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 
-const words = ['Design', 'Create', 'Inspire'];
-const DURATION = 2700;
-const WORD_INTERVAL = 900;
+const DURATION = 6500;
 const COMPLETE_DELAY = 400;
 
 const cubicEase = [0.4, 0, 0.2, 1];
 
 export default function LoadingScreen({ onComplete }) {
   const [progress, setProgress] = useState(0);
-  const [wordIndex, setWordIndex] = useState(0);
   const onCompleteRef = useRef(onComplete);
   const hasCompleted = useRef(false);
 
@@ -23,15 +20,33 @@ export default function LoadingScreen({ onComplete }) {
     const start = performance.now();
     let rafId;
 
+    const getCustomProgress = (elapsed) => {
+      if (elapsed <= 1500) {
+        // Fast from 0 to 70 in 1.5 seconds
+        const t = elapsed / 1500;
+        return 70 * Math.sin(t * (Math.PI / 2)); // Ease-out
+      } else if (elapsed <= 4000) {
+        // Slow from 70 to 90 from 1.5s to 4.0s
+        const t = (elapsed - 1500) / 2500;
+        return 70 + 20 * t; // Linear slow crawl
+      } else {
+        // Accelerate for the last 3 seconds (from 90 to 100)
+        const t = (elapsed - 4000) / 3000;
+        return 90 + 10 * (t * t); // Ease-in (increase speed)
+      }
+    };
+
     const tick = (now) => {
       const elapsed = now - start;
-      const pct = Math.min((elapsed / DURATION) * 100, 100);
+      const calculatedProgress = getCustomProgress(elapsed);
+      const pct = Math.min(calculatedProgress, 100);
       setProgress(pct);
 
-      if (pct < 100) {
+      if (elapsed < DURATION) {
         rafId = requestAnimationFrame(tick);
       } else if (!hasCompleted.current) {
         hasCompleted.current = true;
+        setProgress(100); // Ensure it caps at exact 100
         setTimeout(() => {
           onCompleteRef.current?.();
         }, COMPLETE_DELAY);
@@ -40,21 +55,6 @@ export default function LoadingScreen({ onComplete }) {
 
     rafId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafId);
-  }, []);
-
-  // Word cycling
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setWordIndex((prev) => {
-        if (prev >= words.length - 1) {
-          clearInterval(interval);
-          return prev;
-        }
-        return prev + 1;
-      });
-    }, WORD_INTERVAL);
-
-    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -71,32 +71,26 @@ export default function LoadingScreen({ onComplete }) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.1 }}
       >
-        <span
-          className="text-xs md:text-sm uppercase"
-          style={{ color: '#888888', letterSpacing: '0.3em' }}
-        >
-          StudyFlow
-        </span>
       </motion.div>
 
-      {/* Rotating Words — Center */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <AnimatePresence mode="wait">
-          <motion.span
-            key={wordIndex}
-            className="text-4xl md:text-6xl lg:text-7xl italic"
-            style={{
-              fontFamily: "'Instrument Serif', serif",
-              color: 'rgba(245, 245, 245, 0.8)',
-            }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.4, ease: cubicEase }}
-          >
-            {words[wordIndex]}
-          </motion.span>
-        </AnimatePresence>
+      {/* Video Content — Center */}
+      <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={{ duration: 0.8, ease: cubicEase }}
+          className="w-full max-w-2xl px-8 md:max-w-4xl lg:max-w-6xl flex items-center justify-center"
+        >
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            src="/logo_code.mp4"
+            className="w-full h-auto rounded-2xl object-cover mix-blend-screen opacity-90 shadow-2xl"
+          />
+        </motion.div>
       </div>
 
       {/* Counter — Bottom Right */}

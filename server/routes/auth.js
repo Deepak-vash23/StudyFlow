@@ -1,16 +1,23 @@
 import express from 'express';
 import User from '../models/User.js';
 import crypto from 'crypto';
+import {
+    validateRegister,
+    validateLogin,
+    validateForgotPassword,
+    validateResetPassword,
+    validateObjectId
+} from '../middleware/validators.js';
 
 const router = express.Router();
 
-// Register new user
-router.post('/register', async (req, res) => {
+// Register new user — with validation
+router.post('/register', validateRegister, async (req, res) => {
     try {
         const { name, email, password } = req.body;
 
-        // Check if user already exists
-        const existingUser = await User.findOne({ email });
+        // $eq wrapper prevents NoSQL operator injection on email lookup
+        const existingUser = await User.findOne({ email: { $eq: email } });
         if (existingUser) {
             return res.status(400).json({ message: 'User already exists with this email' });
         }
@@ -20,8 +27,6 @@ router.post('/register', async (req, res) => {
             email,
             password
         });
-
-
 
         await user.save();
 
@@ -34,30 +39,27 @@ router.post('/register', async (req, res) => {
             }
         });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('Registration error:', error);
+        res.status(500).json({ message: 'Registration failed. Please try again.' });
     }
 });
 
-// Login user
-router.post('/login', async (req, res) => {
+// Login user — with validation
+router.post('/login', validateLogin, async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Find user by email
-        const user = await User.findOne({ email });
-        console.log(`Login attempt for: ${email}`);
+        // $eq wrapper prevents NoSQL operator injection
+        const user = await User.findOne({ email: { $eq: email } });
 
         if (!user) {
-            console.log('User not found in DB');
+            // Generic message — don't reveal whether email exists
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        console.log(`User found. stored pass: ${user.password}, provided pass: ${password}`);
-
-        // Check password (Note: In production, use bcrypt.compare)
-        // Check password
+        // Check password with bcrypt
         if (user && (await user.matchPassword(password))) {
-            // Updated last active date
+            // Update last active date
             user.stats.lastActiveDate = new Date();
             await user.save();
 
@@ -71,19 +73,17 @@ router.post('/login', async (req, res) => {
                 }
             });
         } else {
-            console.log('Password mismatch');
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-
-
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('Login error:', error);
+        res.status(500).json({ message: 'Login failed. Please try again.' });
     }
 });
 
-// Get user stats
-router.get('/stats/:userId', async (req, res) => {
+// Get user stats — with ObjectId validation
+router.get('/stats/:userId', ...validateObjectId('userId'), async (req, res) => {
     try {
         const user = await User.findById(req.params.userId).select('name email stats');
         if (!user) {
@@ -92,18 +92,21 @@ router.get('/stats/:userId', async (req, res) => {
 
         res.json(user);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('Get stats error:', error);
+        res.status(500).json({ message: 'Failed to fetch user stats' });
     }
 });
 
-// Forgot Password - Send Reset Link
-router.post("/forgot-password", async (req, res) => {
+// Forgot Password — with validation
+router.post("/forgot-password", validateForgotPassword, async (req, res) => {
     try {
         const { email } = req.body;
 
-        const user = await User.findOne({ email });
+        // $eq wrapper prevents NoSQL operator injection
+        const user = await User.findOne({ email: { $eq: email } });
         if (!user) {
-            return res.status(404).json({ message: "User not found" });
+            // Don't reveal if user exists — return success-like message regardless
+            return res.json({ message: "If an account exists with this email, a reset link has been sent." });
         }
 
         const resetToken = crypto.randomBytes(20).toString("hex");
@@ -120,8 +123,6 @@ router.post("/forgot-password", async (req, res) => {
         const clientUrl = process.env.CLIENT_URL;
         const resetURL = `${clientUrl}/reset-password/${resetToken}`;
 
-        console.log("Reset Link:", resetURL);
-
         if (!process.env.MAILJET_API || !process.env.MAILJET_SECRET || !process.env.EMAIL) {
             console.error("Missing Mailjet configuration in .env");
             return res.status(500).json({ message: "Server email configuration is missing." });
@@ -135,10 +136,6 @@ router.post("/forgot-password", async (req, res) => {
                     "Subject": "Password Reset Link",
                     "TextPart": `You requested a password reset. Please click the following link to reset your password: \n\n ${resetURL} \n\n If you did not request this, please ignore this email.`,
                     "HTMLPart": `<h3>Password Reset</h3><p>You requested a password reset. Please click the link to reset your password: <br><br> <a href="${resetURL}">Reset Password</a> <br><br> If you did not request this, please ignore this email.</p>`
-                    // If you want to use a Mailjet Template later, you can remove Subject/TextPart/HTMLPart and use:
-                    // "TemplateID": 123456,
-                    // "TemplateLanguage": true,
-                    // "Variables": { "resetLink": resetURL, "firstname": user.name }
                 }
             ]
         };
@@ -156,19 +153,19 @@ router.post("/forgot-password", async (req, res) => {
 
         if (!response.ok) {
             console.error("Mailjet API Error:", JSON.stringify(data, null, 2));
-            return res.status(500).json({ message: "Failed to send reset email via Mailjet API." });
+            return res.status(500).json({ message: "Failed to send reset email." });
         }
 
-        console.log("Email sent successfully via Mailjet fetch API");
-        return res.json({ message: "Reset link sent to email" });
+        return res.json({ message: "If an account exists with this email, a reset link has been sent." });
 
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('Forgot password error:', error);
+        res.status(500).json({ message: 'Something went wrong. Please try again.' });
     }
 });
 
-// Reset Password
-router.post("/reset-password/:token", async (req, res) => {
+// Reset Password — with validation
+router.post("/reset-password/:token", validateResetPassword, async (req, res) => {
     try {
         const resetPasswordToken = crypto
             .createHash("sha256")
@@ -176,7 +173,7 @@ router.post("/reset-password/:token", async (req, res) => {
             .digest("hex");
 
         const user = await User.findOne({
-            resetPasswordToken,
+            resetPasswordToken: { $eq: resetPasswordToken },
             resetPasswordExpire: { $gt: Date.now() }
         });
 
@@ -192,7 +189,8 @@ router.post("/reset-password/:token", async (req, res) => {
 
         res.json({ message: "Password reset successful" });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('Reset password error:', error);
+        res.status(500).json({ message: 'Password reset failed. Please try again.' });
     }
 });
 

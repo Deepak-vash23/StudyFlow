@@ -4,15 +4,18 @@ const taskSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        // ref: 'User' // If we had a User model
+        ref: 'User'
     },
     title: {
         type: String,
         required: true,
-        trim: true
+        trim: true,
+        maxlength: [200, 'Title cannot exceed 200 characters']
     },
     description: {
-        type: String
+        type: String,
+        trim: true,
+        maxlength: [2000, 'Description cannot exceed 2000 characters']
     },
     category: {
         type: String,
@@ -26,10 +29,11 @@ const taskSchema = new mongoose.Schema({
     },
     assignedDate: {
         type: Date
-        // required: false - Allow tasks to be in "Backlog" without a specific date
     },
     estimatedTime: {
-        type: Number
+        type: Number,
+        min: [0, 'Estimated time cannot be negative'],
+        max: [9999, 'Estimated time cannot exceed 9999']
     },
     estimatedTimeUnit: {
         type: String,
@@ -37,24 +41,28 @@ const taskSchema = new mongoose.Schema({
         default: 'mins'
     },
     slotStart: {
-        type: String // HH:mm format
+        type: String, // HH:mm format
+        match: [/^([01]\d|2[0-3]):[0-5]\d$/, 'Slot start must be in HH:mm format']
     },
     slotEnd: {
-        type: String // HH:mm format
+        type: String, // HH:mm format
+        match: [/^([01]\d|2[0-3]):[0-5]\d$/, 'Slot end must be in HH:mm format']
     },
     status: {
         type: String,
         enum: ['Pending', 'In Progress', 'Completed', 'Failed'],
         default: 'Pending',
-        index: true // Optimizing queries on status
+        index: true
     },
     type: {
-        type: String, // 'task' or 'slot'
+        type: String,
         default: 'task',
         enum: ['task', 'slot']
     },
     failureReason: {
-        type: String
+        type: String,
+        trim: true,
+        maxlength: [500, 'Failure reason cannot exceed 500 characters']
     }
 }, {
     timestamps: true
